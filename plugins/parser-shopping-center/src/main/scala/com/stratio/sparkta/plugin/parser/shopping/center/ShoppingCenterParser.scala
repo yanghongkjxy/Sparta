@@ -24,10 +24,10 @@ import scala.util.parsing.json.JSON
 import com.stratio.sparkta.sdk.{Event, Parser}
 
 class ShoppingCenterParser(name: String,
-                     order: Integer,
-                     inputField: String,
-                     outputFields: Seq[String],
-                     properties: Map[String, JSerializable])
+                           order: Integer,
+                           inputField: String,
+                           outputFields: Seq[String],
+                           properties: Map[String, JSerializable])
   extends Parser(name, order, inputField, outputFields, properties) {
 
   override def parse(data: Event): Event = {
@@ -47,20 +47,20 @@ class ShoppingCenterParser(name: String,
 
         val resultMap =
           getStringDimensionFrom("order_id", eventValuesMap) ++
-          getDateDimensionFrom("timestamp", eventValuesMap) ++
-          getStringDimensionFrom("day_time_zone", eventValuesMap) ++
-          getLongDimensionFrom("client_id", eventValuesMap) ++
-          getStringDimensionFrom("payment_method", eventValuesMap) ++
-          getStringDimensionFrom("credit_card", eventValuesMap) ++
-          getStringDimensionFrom("shopping_center", eventValuesMap) ++
-          getStringDimensionFrom("channel", eventValuesMap) ++
-          getStringDimensionFrom("city", eventValuesMap) ++
-          getStringDimensionFrom("country", eventValuesMap) ++
-          getIntDimensionFrom("employee", eventValuesMap) ++
-          getFloatDimensionFrom("total_amount", eventValuesMap) ++
-          getIntDimensionFrom("total_products", eventValuesMap) ++
-          getStringDimensionFrom("order_size", eventValuesMap) ++
-          getLineOrderDimensions(eventValuesMap)
+            getDateDimensionFrom("timestamp", eventValuesMap) ++
+            getStringDimensionFrom("day_time_zone", eventValuesMap) ++
+            getLongDimensionFrom("client_id", eventValuesMap) ++
+            getStringDimensionFrom("payment_method", eventValuesMap) ++
+            getStringDimensionFrom("credit_card", eventValuesMap) ++
+            getStringDimensionFrom("shopping_center", eventValuesMap) ++
+            getStringDimensionFrom("channel", eventValuesMap) ++
+            getStringDimensionFrom("city", eventValuesMap) ++
+            getStringDimensionFrom("country", eventValuesMap) ++
+            getIntDimensionFrom("employee", eventValuesMap) ++
+            getFloatDimensionFrom("total_amount", eventValuesMap) ++
+            getIntDimensionFrom("total_products", eventValuesMap) ++
+            getStringDimensionFrom("order_size", eventValuesMap) ++
+            getLineOrderDimensions(eventValuesMap)
 
         event = Some(new Event((resultMap.asInstanceOf[Map[String, JSerializable]] ++ addGeoTo(resultMap))
           .filter(m => (m._2.toString != "") && outputFields.contains(m._1)), None))
