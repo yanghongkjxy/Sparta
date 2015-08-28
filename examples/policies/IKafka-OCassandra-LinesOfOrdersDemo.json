@@ -1,0 +1,182 @@
+{
+  "name": "linesOfOrder-demo",
+  "description": "policy-demo",
+  "sparkStreamingWindow": 2000,
+  "checkpointPath": "checkpoint",
+  "rawData": {
+    "enabled": "true",
+    "partitionFormat": "day",
+    "path": "demoPath"
+  },
+  "input":
+  {
+    "name": "in-kafka",
+    "type": "Kafka",
+    "configuration": {
+      "topics": "demo",
+      "kafkaParams.zookeeper.connect": "localhost:2181",
+      "kafkaParams.group.id": "testgroup"
+    }
+  }
+,
+  "transformations": [
+    {
+      "name": "shopping-center-parser",
+      "order": 1,
+      "type": "ShoppingCenter",
+      "outputFields": [
+        "id",
+        "timestamp",
+        "payment_method",
+        "day_time_zone",
+        "geo",
+        "shopping_center",
+        "country",
+        "city",
+        "total_amount",
+        "total_products",
+        "product",
+        "product_family",
+        "product_price",
+        "product_quantity"
+
+      ],
+      "configuration": {}
+    },
+    {
+      "name": "timestamp-parser",
+      "order": 2,
+      "type": "DateTime",
+      "inputField": "timestamp",
+      "outputFields": [
+        "timestamp"
+      ],
+      "configuration": {
+        "timestamp": "unixMillis"
+      }
+    }
+  ],
+  "cubes": [
+    {
+      "name": "productFamily",
+      "checkpointConfig": {
+        "timeDimension": "timestamp",
+        "granularity": "day",
+        "interval": 30000,
+        "timeAvailability": 60000
+      },
+      "dimensions": [
+        {
+          "name": "product_family",
+          "field": "product_family"
+        },
+        {
+          "name": "timestamp",
+          "field": "timestamp",
+          "type": "DateTime",
+          "precision": "day"
+        }
+      ],
+      "operators": [
+        {
+          "name": "sumoperator",
+          "type": "sum",
+          "configuration": {
+            "inputField": "total_amount"
+          }
+        }
+      ]
+    },
+    {
+      "name": "clientProductAndFamily",
+      "checkpointConfig": {
+        "timeDimension": "minute",
+        "granularity": "minute",
+        "interval": 30000,
+        "timeAvailability": 60000
+      },
+      "dimensions": [
+        {
+          "name": "product_family",
+          "field": "product_family"
+        },
+        {
+          "name": "product",
+          "field": "product"
+        },
+        {
+          "name": "client_id",
+          "field": "client_id"
+        }
+      ],
+      "operators": [
+        {
+          "name": "countoperator",
+          "type": "Count",
+          "configuration": {}
+        }
+      ]
+    },
+    {
+      "name": "productFamilyAndNumberOfProducts",
+      "checkpointConfig": {
+        "timeDimension": "minute",
+        "granularity": "minute",
+        "interval": 30000,
+        "timeAvailability": 60000
+      },
+      "dimensions": [
+        {
+          "name": "product_family",
+          "field": "product_family"
+        },
+        {
+          "name": "product",
+          "field": "product"
+        }
+      ],
+      "operators": [
+        {
+          "name": "countoperator",
+          "type": "Count",
+          "configuration": {}
+        }
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "name": "out-cassandra",
+      "type": "Cassandra",
+      "configuration": {
+        "connectionHost": "127.0.0.1",
+        "connectionPort": "9042",
+        "cluster": "Test Cluster",
+        "keyspace": "sparkta"
+      }
+    }
+  ]
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

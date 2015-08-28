@@ -1,0 +1,492 @@
+{
+  "name": "sales-demo",
+  "id": "123",
+  "description":"sales-demo",
+  "sparkStreamingWindow": 2000,
+  "checkpointPath": "checkpoint",
+  "rawData": {
+    "enabled": "false",
+    "partitionFormat": "day",
+    "path": "demoPath"
+  },
+  "input":
+  {
+    "name": "in-kafka",
+    "type": "Kafka",
+    "configuration": {
+      "topics": "demo",
+      "kafkaParams.zookeeper.connect": "localhost:2181",
+      "kafkaParams.group.id": "testgroup"
+    }
+  }
+,
+  "transformations": [
+    {
+      "name": "shopping-center-parser",
+      "order": 1,
+      "type": "ShoppingCenter",
+      "outputFields": [
+        "order_id",
+        "timestamp",
+        "payment_method",
+        "day_time_zone",
+        "geo",
+        "shopping_center",
+        "country",
+        "city",
+        "total_amount",
+        "total_products",
+        "product",
+        "product_family",
+        "product_price",
+        "product_quantity"
+
+      ],
+      "configuration": {}
+    },
+    {
+      "name": "timestamp-parser",
+      "order": 2,
+      "type": "DateTime",
+      "inputField": "timestamp",
+      "outputFields": [
+        "timestamp"
+      ],
+      "configuration": {
+        "timestamp": "unixMillis"
+      }
+    }
+  ],
+  "cubes": [
+    {
+      "name": "salesPerStore",
+      "checkpointConfig": {
+        "timeDimension": "timestamp",
+        "granularity": "day",
+        "interval": 30000,
+        "timeAvailability": 60000000
+      },
+      "dimensions": [
+        {
+          "name": "shopping_center",
+          "field": "shopping_center"
+        },
+        {
+          "name": "total_amount",
+          "field": "total_amount"
+        },
+        {
+          "name": "timestamp",
+          "field": "timestamp",
+          "type": "DateTime",
+          "precision": "day"
+        }
+      ],
+      "operators": [
+        {
+          "name": "sumoperator",
+          "type": "Sum",
+          "configuration": {
+            "inputField": "total_amount"
+          }
+        }
+      ]
+    },
+    {
+      "name": "paymentMethods",
+      "checkpointConfig": {
+        "timeDimension": "timestamp",
+        "granularity": "day",
+        "interval": 30000,
+        "timeAvailability": 60000000
+      },
+      "dimensions": [
+        {
+          "name": "payment_method",
+          "field": "payment_method"
+        },
+        {
+          "name": "total_amount",
+          "field": "total_amount"
+        },
+        {
+          "name": "timestamp",
+          "field": "timestamp",
+          "type": "DateTime",
+          "precision": "day"
+        }
+      ],
+      "operators": [
+        {
+          "name": "sumoperator",
+          "type": "Sum",
+          "configuration": {
+            "inputField": "total_amount"
+          }
+        }
+      ]
+    },
+    {
+      "name": "orderSize",
+      "checkpointConfig": {
+        "timeDimension": "timestamp",
+        "granularity": "day",
+        "interval": 30000,
+        "timeAvailability": 60000000
+      },
+      "dimensions": [
+        {
+          "name": "order_size",
+          "field": "order_size"
+        },
+        {
+          "name": "timestamp",
+          "field": "timestamp",
+          "type": "DateTime",
+          "precision": "day"
+        }
+      ],
+      "operators": [
+        {
+          "name": "count_order_size",
+          "type": "Count",
+          "configuration": {
+          }
+        }
+      ]
+    },
+    {
+      "name": "incomePerCenterAndNumberOfProducts",
+      "checkpointConfig": {
+        "timeDimension": "timestamp",
+        "granularity": "day",
+        "interval": 30000,
+        "timeAvailability": 60000000
+      },
+      "dimensions": [
+        {
+          "name": "shopping_center",
+          "field": "shopping_center"
+        },
+        {
+          "name": "total_amount",
+          "field": "total_amount"
+        },
+        {
+          "name": "total_products",
+          "field": "total_products"
+        },
+        {
+          "name": "timestamp",
+          "field": "timestamp",
+          "type": "DateTime",
+          "precision": "day"
+        }
+      ],
+      "operators": [
+        {
+          "name": "sumoperator",
+          "type": "Sum",
+          "configuration": {
+            "inputField": "total_amount"
+          }
+        },
+        {
+          "name": "sumoperator2",
+          "type": "Sum",
+          "configuration": {
+            "inputField": "total_products"
+          }
+        }
+      ]
+    },
+    {
+      "name": "heatMapPerActivity",
+      "checkpointConfig": {
+        "timeDimension": "timestamp",
+        "granularity": "day",
+        "interval": 30000,
+        "timeAvailability": 60000000
+      },
+      "dimensions": [
+        {
+          "name": "total_products",
+          "field": "total_products"
+        },
+        {
+          "name": "timestamp",
+          "field": "timestamp",
+          "type": "DateTime",
+          "precision": "day"
+        }
+      ],
+      "operators": [
+        {
+          "name": "sumoperator",
+          "type": "Sum",
+          "configuration": {
+            "inputField": "total_products"
+          }
+        }
+      ]
+    },
+    {
+      "name": "shoppingCenterAndProductFamily",
+      "checkpointConfig": {
+        "timeDimension": "timestamp",
+        "granularity": "day",
+        "interval": 30000,
+        "timeAvailability": 60000000
+      },
+      "dimensions": [
+        {
+          "name": "shopping_center",
+          "field": "shopping_center"
+        },
+        {
+          "name": "timestamp",
+          "field": "timestamp",
+          "type": "DateTime",
+          "precision": "day"
+        },
+        {
+          "name": "product_family",
+          "field": "product_family"
+        },
+        {
+          "name": "total_products",
+          "field": "total_products"
+        }
+      ],
+      "operators": [
+        {
+          "name": "sumoperator",
+          "type": "Sum",
+          "configuration": {
+            "inputField": "total_products"
+          }
+        }
+      ]
+    },
+    {
+      "name": "TotalPerDay",
+      "checkpointConfig": {
+        "timeDimension": "timestamp",
+        "granularity": "day",
+        "interval": 30000,
+        "timeAvailability": 60000000
+      },
+      "dimensions": [
+        {
+          "name": "total_amount",
+          "field": "total_amount"
+        },
+        {
+          "name": "timestamp",
+          "field": "timestamp",
+          "type": "DateTime",
+          "precision": "day"
+        },
+        {
+          "name": "shopping_center",
+          "field": "shopping_center"
+        }
+      ],
+      "operators": [
+        {
+          "name": "sumoperator",
+          "type": "Sum",
+          "configuration": {
+            "inputField": "total_amount"
+          }
+        }
+      ]
+    },
+    {
+      "name": "clientShoppingCenter",
+      "checkpointConfig": {
+        "timeDimension": "minute",
+        "granularity": "minute",
+        "interval": 30000,
+        "timeAvailability": 60000000
+      },
+      "dimensions": [
+        {
+          "name": "total_amount",
+          "field": "total_amount"
+        },
+        {
+          "name": "shopping_center",
+          "field": "shopping_center"
+        },
+        {
+          "name": "client_id",
+          "field": "client_id"
+        }
+      ],
+      "operators": [
+        {
+          "name": "sumoperator",
+          "type": "Sum",
+          "configuration": {
+            "inputField": "total_amount"
+          }
+        }
+      ]
+    },
+    {
+      "name": "clientPaymentMethod",
+      "checkpointConfig": {
+        "timeDimension": "minute",
+        "granularity": "minute",
+        "interval": 30000,
+        "timeAvailability": 60000000
+      },
+      "dimensions": [
+        {
+          "name": "total_amount",
+          "field": "total_amount"
+        },
+        {
+          "name": "payment_method",
+          "field": "payment_method"
+        },
+        {
+          "name": "client_id",
+          "field": "client_id"
+        }
+      ],
+      "operators": [
+        {
+          "name": "sumoperator",
+          "type": "Sum",
+          "configuration": {
+            "inputField": "total_amount"
+          }
+        }
+      ]
+    },
+    {
+      "name": "clientDayTimeShopping",
+      "checkpointConfig": {
+        "timeDimension": "minute",
+        "granularity": "minute",
+        "interval": 30000,
+        "timeAvailability": 60000000
+      },
+      "dimensions": [
+        {
+          "name": "day_time_zone",
+          "field": "day_time_zone"
+        },
+        {
+          "name": "payment_method",
+          "field": "payment_method"
+        },
+        {
+          "name": "client_id",
+          "field": "client_id"
+        }
+      ],
+      "operators": [
+        {
+          "name": "sumoperator",
+          "type": "Sum",
+          "configuration": {
+            "inputField": "total_amount"
+          }
+        }
+      ]
+    },
+    {
+      "name": "clientTotalAmount",
+      "checkpointConfig": {
+        "timeDimension": "minute",
+        "granularity": "minute",
+        "interval": 30000,
+        "timeAvailability": 60000000
+      },
+      "dimensions": [
+        {
+          "name": "client_id",
+          "field": "client_id"
+        }
+      ],
+      "operators": [
+        {
+          "name": "sumoperator",
+          "type": "Sum",
+          "configuration": {
+            "inputField": "total_amount"
+          }
+        }
+      ]
+    },
+    {
+      "name": "clientOrderSize",
+      "checkpointConfig": {
+        "timeDimension": "minute",
+        "granularity": "minute",
+        "interval": 30000,
+        "timeAvailability": 60000000
+      },
+      "dimensions": [
+        {
+          "name": "client_id",
+          "field": "client_id"
+        },
+        {
+          "name": "order_size",
+          "field": "order_size"
+        }
+      ],
+      "operators": [
+        {
+          "name": "countoperator",
+          "type": "Count",
+          "configuration": {}
+        }
+      ]
+    },
+    {
+      "name": "productPerFamilyAndCenter",
+      "checkpointConfig": {
+        "timeDimension": "minute",
+        "granularity": "minute",
+        "interval": 30000,
+        "timeAvailability": 60000000
+      },
+      "dimensions": [
+        {
+          "name": "shopping_center",
+          "field": "shopping_center"
+        },
+        {
+          "name": "product_family",
+          "field": "product_family"
+        }
+      ],
+      "operators": [
+        {
+          "name": "sumoperator",
+          "type": "Sum",
+          "configuration": {
+            "inputField": "total_products"
+          }
+        }
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "name": "out-cassandra",
+      "type": "Cassandra",
+      "configuration": {
+        "connectionHost": "127.0.0.1",
+        "connectionPort": "9042",
+        "cluster": "Test Cluster",
+        "keyspace": "sparktademo"
+      }
+    }
+  ]
+}
