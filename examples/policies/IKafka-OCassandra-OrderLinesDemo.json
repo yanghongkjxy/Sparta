@@ -1,15 +1,10 @@
 {
-  "name": "linesOfOrder-demo",
+  "name": "OrderLines-demo",
+  "id": "124",
   "description": "policy-demo",
   "sparkStreamingWindow": 2000,
   "checkpointPath": "checkpoint",
-  "rawData": {
-    "enabled": "true",
-    "partitionFormat": "day",
-    "path": "demoPath"
-  },
-  "input":
-  {
+  "input": {
     "name": "in-kafka",
     "type": "Kafka",
     "configuration": {
@@ -17,29 +12,32 @@
       "kafkaParams.zookeeper.connect": "localhost:2181",
       "kafkaParams.group.id": "testgroup"
     }
-  }
-,
+  },
   "transformations": [
     {
       "name": "shopping-center-parser",
       "order": 1,
       "type": "ShoppingCenter",
       "outputFields": [
-        "id",
+        "order_id",
         "timestamp",
-        "payment_method",
         "day_time_zone",
+        "client_id",
+        "payment_method",
         "geo",
+        "credit_card",
         "shopping_center",
-        "country",
+        "channel",
         "city",
+        "country",
+        "employee",
         "total_amount",
         "total_products",
+        "order_size",
         "product",
-        "product_family",
-        "product_price",
-        "product_quantity"
-
+        "family",
+        "quantity",
+        "price"
       ],
       "configuration": {}
     },
@@ -67,11 +65,11 @@
       },
       "dimensions": [
         {
-          "name": "product_family",
-          "field": "product_family"
+          "name": "f",
+          "field": "family"
         },
         {
-          "name": "timestamp",
+          "name": "ts",
           "field": "timestamp",
           "type": "DateTime",
           "precision": "day"
@@ -79,8 +77,8 @@
       ],
       "operators": [
         {
-          "name": "sumoperator",
-          "type": "sum",
+          "name": "sum_ta",
+          "type": "Sum",
           "configuration": {
             "inputField": "total_amount"
           }
@@ -97,21 +95,21 @@
       },
       "dimensions": [
         {
-          "name": "product_family",
-          "field": "product_family"
+          "name": "f",
+          "field": "family"
         },
         {
-          "name": "product",
+          "name": "p",
           "field": "product"
         },
         {
-          "name": "client_id",
+          "name": "ci",
           "field": "client_id"
         }
       ],
       "operators": [
         {
-          "name": "countoperator",
+          "name": "count",
           "type": "Count",
           "configuration": {}
         }
@@ -127,17 +125,17 @@
       },
       "dimensions": [
         {
-          "name": "product_family",
-          "field": "product_family"
+          "name": "f",
+          "field": "family"
         },
         {
-          "name": "product",
+          "name": "p",
           "field": "product"
         }
       ],
       "operators": [
         {
-          "name": "countoperator",
+          "name": "count",
           "type": "Count",
           "configuration": {}
         }
@@ -149,7 +147,7 @@
       "name": "out-cassandra",
       "type": "Cassandra",
       "configuration": {
-        "connectionHost": "127.0.0.1",
+        "connectionHost": "192.168.1.106",
         "connectionPort": "9042",
         "cluster": "Test Cluster",
         "keyspace": "sparkta"
@@ -157,26 +155,3 @@
     }
   ]
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

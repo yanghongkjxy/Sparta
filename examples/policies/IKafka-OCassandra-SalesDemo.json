@@ -4,11 +4,6 @@
   "description":"sales-demo",
   "sparkStreamingWindow": 2000,
   "checkpointPath": "checkpoint",
-  "rawData": {
-    "enabled": "false",
-    "partitionFormat": "day",
-    "path": "demoPath"
-  },
   "input":
   {
     "name": "in-kafka",
@@ -28,19 +23,23 @@
       "outputFields": [
         "order_id",
         "timestamp",
-        "payment_method",
         "day_time_zone",
+        "client_id",
+        "payment_method",
         "geo",
+        "credit_card",
         "shopping_center",
-        "country",
+        "channel",
         "city",
+        "country",
+        "employee",
         "total_amount",
         "total_products",
+        "order_size",
         "product",
-        "product_family",
-        "product_price",
-        "product_quantity"
-
+        "family",
+        "quantity",
+        "price"
       ],
       "configuration": {}
     },
@@ -68,15 +67,15 @@
       },
       "dimensions": [
         {
-          "name": "shopping_center",
+          "name": "sc",
           "field": "shopping_center"
         },
         {
-          "name": "total_amount",
+          "name": "ta",
           "field": "total_amount"
         },
         {
-          "name": "timestamp",
+          "name": "ts",
           "field": "timestamp",
           "type": "DateTime",
           "precision": "day"
@@ -84,7 +83,7 @@
       ],
       "operators": [
         {
-          "name": "sumoperator",
+          "name": "sum_ta",
           "type": "Sum",
           "configuration": {
             "inputField": "total_amount"
@@ -102,15 +101,15 @@
       },
       "dimensions": [
         {
-          "name": "payment_method",
+          "name": "pm",
           "field": "payment_method"
         },
         {
-          "name": "total_amount",
+          "name": "ta",
           "field": "total_amount"
         },
         {
-          "name": "timestamp",
+          "name": "ts",
           "field": "timestamp",
           "type": "DateTime",
           "precision": "day"
@@ -118,7 +117,7 @@
       ],
       "operators": [
         {
-          "name": "sumoperator",
+          "name": "sum_ta",
           "type": "Sum",
           "configuration": {
             "inputField": "total_amount"
@@ -136,11 +135,11 @@
       },
       "dimensions": [
         {
-          "name": "order_size",
+          "name": "os",
           "field": "order_size"
         },
         {
-          "name": "timestamp",
+          "name": "ts",
           "field": "timestamp",
           "type": "DateTime",
           "precision": "day"
@@ -148,7 +147,7 @@
       ],
       "operators": [
         {
-          "name": "count_order_size",
+          "name": "count",
           "type": "Count",
           "configuration": {
           }
@@ -165,19 +164,19 @@
       },
       "dimensions": [
         {
-          "name": "shopping_center",
+          "name": "sc",
           "field": "shopping_center"
         },
         {
-          "name": "total_amount",
+          "name": "ta",
           "field": "total_amount"
         },
         {
-          "name": "total_products",
+          "name": "tp",
           "field": "total_products"
         },
         {
-          "name": "timestamp",
+          "name": "ts",
           "field": "timestamp",
           "type": "DateTime",
           "precision": "day"
@@ -185,14 +184,14 @@
       ],
       "operators": [
         {
-          "name": "sumoperator",
+          "name": "sum_ta",
           "type": "Sum",
           "configuration": {
             "inputField": "total_amount"
           }
         },
         {
-          "name": "sumoperator2",
+          "name": "sum_tp",
           "type": "Sum",
           "configuration": {
             "inputField": "total_products"
@@ -210,11 +209,13 @@
       },
       "dimensions": [
         {
-          "name": "total_products",
-          "field": "total_products"
+          "name": "g",
+          "field": "geo",
+          "type": "GeoHash",
+          "precision": "precision12"
         },
         {
-          "name": "timestamp",
+          "name": "ts",
           "field": "timestamp",
           "type": "DateTime",
           "precision": "day"
@@ -222,7 +223,7 @@
       ],
       "operators": [
         {
-          "name": "sumoperator",
+          "name": "sum_tp",
           "type": "Sum",
           "configuration": {
             "inputField": "total_products"
@@ -240,27 +241,23 @@
       },
       "dimensions": [
         {
-          "name": "shopping_center",
+          "name": "sc",
           "field": "shopping_center"
         },
         {
-          "name": "timestamp",
+          "name": "ts",
           "field": "timestamp",
           "type": "DateTime",
           "precision": "day"
         },
         {
-          "name": "product_family",
-          "field": "product_family"
-        },
-        {
-          "name": "total_products",
-          "field": "total_products"
+          "name": "f",
+          "field": "family"
         }
       ],
       "operators": [
         {
-          "name": "sumoperator",
+          "name": "sum_tp",
           "type": "Sum",
           "configuration": {
             "inputField": "total_products"
@@ -278,23 +275,19 @@
       },
       "dimensions": [
         {
-          "name": "total_amount",
-          "field": "total_amount"
-        },
-        {
-          "name": "timestamp",
+          "name": "ts",
           "field": "timestamp",
           "type": "DateTime",
           "precision": "day"
         },
         {
-          "name": "shopping_center",
+          "name": "sc",
           "field": "shopping_center"
         }
       ],
       "operators": [
         {
-          "name": "sumoperator",
+          "name": "sum_ta",
           "type": "Sum",
           "configuration": {
             "inputField": "total_amount"
@@ -312,21 +305,17 @@
       },
       "dimensions": [
         {
-          "name": "total_amount",
-          "field": "total_amount"
-        },
-        {
-          "name": "shopping_center",
+          "name": "sc",
           "field": "shopping_center"
         },
         {
-          "name": "client_id",
+          "name": "ci",
           "field": "client_id"
         }
       ],
       "operators": [
         {
-          "name": "sumoperator",
+          "name": "sum_ta",
           "type": "Sum",
           "configuration": {
             "inputField": "total_amount"
@@ -344,21 +333,17 @@
       },
       "dimensions": [
         {
-          "name": "total_amount",
-          "field": "total_amount"
-        },
-        {
-          "name": "payment_method",
+          "name": "pm",
           "field": "payment_method"
         },
         {
-          "name": "client_id",
+          "name": "ci",
           "field": "client_id"
         }
       ],
       "operators": [
         {
-          "name": "sumoperator",
+          "name": "sum_ta",
           "type": "Sum",
           "configuration": {
             "inputField": "total_amount"
@@ -376,21 +361,21 @@
       },
       "dimensions": [
         {
-          "name": "day_time_zone",
+          "name": "dtz",
           "field": "day_time_zone"
         },
         {
-          "name": "payment_method",
+          "name": "pm",
           "field": "payment_method"
         },
         {
-          "name": "client_id",
+          "name": "ci",
           "field": "client_id"
         }
       ],
       "operators": [
         {
-          "name": "sumoperator",
+          "name": "sum_ta",
           "type": "Sum",
           "configuration": {
             "inputField": "total_amount"
@@ -408,13 +393,13 @@
       },
       "dimensions": [
         {
-          "name": "client_id",
+          "name": "ci",
           "field": "client_id"
         }
       ],
       "operators": [
         {
-          "name": "sumoperator",
+          "name": "sum_ta",
           "type": "Sum",
           "configuration": {
             "inputField": "total_amount"
@@ -432,17 +417,17 @@
       },
       "dimensions": [
         {
-          "name": "client_id",
+          "name": "ci",
           "field": "client_id"
         },
         {
-          "name": "order_size",
+          "name": "os",
           "field": "order_size"
         }
       ],
       "operators": [
         {
-          "name": "countoperator",
+          "name": "count",
           "type": "Count",
           "configuration": {}
         }
@@ -458,17 +443,17 @@
       },
       "dimensions": [
         {
-          "name": "shopping_center",
+          "name": "sc",
           "field": "shopping_center"
         },
         {
-          "name": "product_family",
-          "field": "product_family"
+          "name": "f",
+          "field": "family"
         }
       ],
       "operators": [
         {
-          "name": "sumoperator",
+          "name": "sum_tp",
           "type": "Sum",
           "configuration": {
             "inputField": "total_products"
@@ -482,10 +467,10 @@
       "name": "out-cassandra",
       "type": "Cassandra",
       "configuration": {
-        "connectionHost": "127.0.0.1",
+        "connectionHost": "192.168.1.106",
         "connectionPort": "9042",
         "cluster": "Test Cluster",
-        "keyspace": "sparktademo"
+        "keyspace": "sparkta"
       }
     }
   ]
