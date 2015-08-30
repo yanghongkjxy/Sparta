@@ -54,7 +54,7 @@ case class GeoHashField(props: Map[String, JSerializable])
 
   override val operationProps : Map[String, JSerializable] = props
 
-  override val defaultTypeOperation = TypeOp.ArrayDouble
+  override val defaultTypeOperation = TypeOp.String
 
   //scalastyle:off
   override def precision(keyName: String): Precision = keyName match {
@@ -147,6 +147,7 @@ object GeoHashField {
   def decodeHash(geoLocHash: String): JSerializable = {
     val geoDecoded: LatLong = GeoHash.decodeHash(geoLocHash)
     val (latitude, longitude) = (geoDecoded.getLat, geoDecoded.getLon)
-    Seq(longitude, latitude).asInstanceOf[JSerializable]
+//    Seq(longitude, latitude).asInstanceOf[JSerializable]
+    latitude + "__" + longitude
   }
 }

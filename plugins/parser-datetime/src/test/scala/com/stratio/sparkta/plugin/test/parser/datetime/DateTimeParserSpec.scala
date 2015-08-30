@@ -63,5 +63,12 @@ class DateTimeParserSpec extends WordSpecLike {
       ))
       assertResult(e2)(new DateTimeParser("name", 1, inputField, outputsFields, Map("inputFormat" -> "dateTime")).parse(e1))
     }
+    "parse time format" in {
+      val e1 = new Event(Map("ts" -> "2014-05-30T08:58:28-02:00"))
+      val e2 = new Date()
+      assertResult(e2)(
+        new DateTimeParser("name", 1, inputField, outputsFields, Map("inputFormat" -> ""))
+          .parse(e1))
+    }
   }
 }

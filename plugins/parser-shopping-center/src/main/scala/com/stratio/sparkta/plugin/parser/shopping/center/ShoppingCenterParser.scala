@@ -18,7 +18,11 @@ package com.stratio.sparkta.plugin.parser.shopping.center
 
 import java.io.{Serializable => JSerializable}
 import java.text.{DateFormat, SimpleDateFormat}
+import java.util.Date
 
+import akka.event.slf4j.SLF4JLogging
+
+import scala.util.{Failure, Success, Try}
 import scala.util.parsing.json.JSON
 
 import com.stratio.sparkta.sdk.{Event, Parser}
@@ -28,12 +32,13 @@ class ShoppingCenterParser(name: String,
                            inputField: String,
                            outputFields: Seq[String],
                            properties: Map[String, JSerializable])
-  extends Parser(name, order, inputField, outputFields, properties) {
+  extends Parser(name, order, inputField, outputFields, properties) with SLF4JLogging {
 
   override def parse(data: Event): Event = {
     var event: Option[Event] = None
     data.keyMap.foreach(e => {
       if (inputField.equals(e._1)) {
+        Try({
         val result = e._2 match {
           case s: String => s
           case b: Array[Byte] => new String(b)
@@ -41,6 +46,7 @@ class ShoppingCenterParser(name: String,
 
         JSON.globalNumberParser = { input: String => input.toDouble }
         val json = JSON.parseFull(result)
+
         event = Some(new Event(json.get.asInstanceOf[Map[String, JSerializable]], Some(e._2)))
 
         val eventValuesMap = event.get.keyMap
@@ -63,7 +69,11 @@ class ShoppingCenterParser(name: String,
             getLineOrderDimensions(eventValuesMap)
 
         event = Some(new Event((resultMap.asInstanceOf[Map[String, JSerializable]] ++ addGeoTo(resultMap))
-          .filter(m => (m._2.toString != "") && outputFields.contains(m._1)), None))
+          .filter(m => (m._2.toString != "") && outputFields.contains(m._1)), None))})
+        match {
+          case Success(event) => event
+          case Failure(e) => log.error("For event: " + data, e); None
+        }
       }
     })
 
@@ -75,7 +85,8 @@ class ShoppingCenterParser(name: String,
 
   private def getLineOrderDimensions(eventValuesMap: Map[String, JSerializable]) = {
     if (isLineOrder(eventValuesMap)) {
-      eventValuesMap.asInstanceOf[Map[String, Any]].get("lines").get.asInstanceOf[List[Map[String, JSerializable]]](0)
+      eventValuesMap.asInstanceOf[Map[String, Any]].get("lines")
+        .get.asInstanceOf[List[Map[String, JSerializable]]].head
     } else {
       Map()
     }
@@ -88,8 +99,9 @@ class ShoppingCenterParser(name: String,
 
   def getDateDimensionFrom(dimensionName: String, eventValuesMap: Map[String, JSerializable]):
   Map[String, JSerializable] = {
-    val format: DateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-    Map(dimensionName -> format.parse(eventValuesMap.get(dimensionName).get.toString))
+//    val format: DateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+//    Map(dimensionName -> format.parse(eventValuesMap.get(dimensionName).get.toString))
+    Map(dimensionName -> new Date())
   }
 
   def getStringDimensionFrom(dimensionName: String, eventValuesMap: Map[String, JSerializable]):
