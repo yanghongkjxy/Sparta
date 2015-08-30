@@ -43,11 +43,11 @@ class PolicyStatusActor extends Actor with SLF4JLogging with SparktaSerializer {
       val ips =
         read[PolicyStatusModel](new String(curator.getData.forPath(s"${AppConstant.ContextPath}/${policyStatus.id}")))
       log.info(s">> Updating context ${policyStatus.id} : <${ips.status}> to <${policyStatus.status}>")
-      validate(Some(ips.status), policyStatus.status)
+//      validate(Some(ips.status), policyStatus.status)
       curator.setData().forPath(path, write(policyStatus).getBytes)
     } else {
       log.info(s">> Creating policy context |${policyStatus.id}| to <${policyStatus.status}>")
-      validate(None, policyStatus.status)
+//      validate(None, policyStatus.status)
       curator.create.creatingParentsIfNeeded.forPath(path, write(policyStatus).getBytes)
     }
   }
