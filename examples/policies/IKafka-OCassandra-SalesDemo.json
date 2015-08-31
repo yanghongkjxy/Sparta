@@ -9,8 +9,8 @@
     "name": "in-kafka",
     "type": "Kafka",
     "configuration": {
-      "topics": "c_orders",
-      "kafkaParams.zookeeper.connect": "10.10.0.6:2181",
+      "topics": "demo3",
+      "kafkaParams.zookeeper.connect": "localhost:2181",
       "kafkaParams.group.id": "testgroup"
     }
   }
@@ -414,6 +414,30 @@
           }
         }
       ]
+    },
+    {
+      "name": "salesHistoryClient",
+      "checkpointConfig": {
+        "timeDimension": "minute",
+        "granularity": "minute",
+        "interval": 30000,
+        "timeAvailability": 60000000
+      },
+      "dimensions": [
+        {
+          "name": "ci",
+          "field": "client_id"
+        }
+      ],
+      "operators": [
+        {
+          "name": "sum_ta",
+          "type": "Sum",
+          "configuration": {
+            "inputField": "total_amount"
+          }
+        }
+      ]
     }
   ],
   "outputs": [
@@ -421,7 +445,7 @@
       "name": "out-cassandra",
       "type": "Cassandra",
       "configuration": {
-        "connectionHost": "52.2.150.53",
+        "connectionHost": "localhost",
         "connectionPort": "9042",
         "cluster": "Test Cluster",
         "keyspace": "shoppingcenter"
