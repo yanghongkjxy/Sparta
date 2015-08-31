@@ -99,9 +99,8 @@ class ShoppingCenterParser(name: String,
 
   def getDateDimensionFrom(dimensionName: String, eventValuesMap: Map[String, JSerializable]):
   Map[String, JSerializable] = {
-//    val format: DateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-//    Map(dimensionName -> format.parse(eventValuesMap.get(dimensionName).get.toString))
-    Map(dimensionName -> new Date())
+    val format: DateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+    Map(dimensionName -> format.parse(eventValuesMap.get(dimensionName).get.toString))
   }
 
   def getStringDimensionFrom(dimensionName: String, eventValuesMap: Map[String, JSerializable]):

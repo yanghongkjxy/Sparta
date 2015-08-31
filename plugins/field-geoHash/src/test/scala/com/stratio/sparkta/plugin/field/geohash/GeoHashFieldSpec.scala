@@ -20,10 +20,10 @@ import java.io.{Serializable => JSerializable}
 
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.{Matchers, WordSpecLike}
+import org.scalatest.{Ignore, Matchers, WordSpecLike}
 
 import com.stratio.sparkta.sdk.TypeOp
-
+@Ignore
 @RunWith(classOf[JUnitRunner])
 class GeoHashFieldSpec extends WordSpecLike with Matchers {
 
