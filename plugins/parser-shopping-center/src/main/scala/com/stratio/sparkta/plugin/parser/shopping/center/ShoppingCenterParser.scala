@@ -34,98 +34,12 @@ class ShoppingCenterParser(name: String,
                            properties: Map[String, JSerializable])
   extends Parser(name, order, inputField, outputFields, properties) with SLF4JLogging {
 
-  override def parse(data: Event): Event = {
-    var event: Option[Event] = None
-    data.keyMap.foreach(e => {
-      if (inputField.equals(e._1)) {
-        Try({
-        val result = e._2 match {
-          case s: String => s
-          case b: Array[Byte] => new String(b)
-        }
-
-        JSON.globalNumberParser = { input: String => input.toDouble }
-        val json = JSON.parseFull(result)
-
-        if (json.isDefined){
-          event = Some(new Event(json.get.asInstanceOf[Map[String, JSerializable]], Some(e._2)))
-
-          val eventValuesMap = event.get.keyMap
-
-          val resultMap =
-            getStringDimensionFrom("order_id", eventValuesMap) ++
-              getDateDimensionFrom("timestamp", eventValuesMap) ++
-              getStringDimensionFrom("day_time_zone", eventValuesMap) ++
-              getLongDimensionFrom("client_id", eventValuesMap) ++
-              getStringDimensionFrom("payment_method", eventValuesMap) ++
-              getStringDimensionFrom("credit_card", eventValuesMap) ++
-              getStringDimensionFrom("shopping_center", eventValuesMap) ++
-              getStringDimensionFrom("channel", eventValuesMap) ++
-              getStringDimensionFrom("city", eventValuesMap) ++
-              getStringDimensionFrom("country", eventValuesMap) ++
-              getIntDimensionFrom("employee", eventValuesMap) ++
-              getFloatDimensionFrom("total_amount", eventValuesMap) ++
-              getIntDimensionFrom("total_products", eventValuesMap) ++
-              getStringDimensionFrom("order_size", eventValuesMap) ++
-              getFloatDimensionFrom("latitude", eventValuesMap) ++
-              getFloatDimensionFrom("longitude", eventValuesMap) ++
-              getLineOrderDimensions(eventValuesMap)
-
-          event = Some(new Event((resultMap.asInstanceOf[Map[String, JSerializable]] ++ addGeoTo(resultMap))
-            .filter(m => (m._2.toString != "") && outputFields.contains(m._1)), None))}
-        })
-        match {
-          case Success(event) => event
-          case Failure(e) => log.error("For event: " + data, e); None
-        }
-      }
-    })
-    event match {
-      case Some(x) => new Event(data.keyMap ++ x.keyMap)
-      case None => log.error("For event: " + data); new Event(data.keyMap)
-    }
-  }
-
-  private def getLineOrderDimensions(eventValuesMap: Map[String, JSerializable]) = {
-    if (isLineOrder(eventValuesMap)) {
-      eventValuesMap.asInstanceOf[Map[String, Any]].get("lines")
-        .get.asInstanceOf[List[Map[String, JSerializable]]].head
-    } else {
-      Map()
-    }
-  }
-
-  def isLineOrder(eventValuesMap: Map[String, JSerializable]): Boolean = {
-    eventValuesMap.asInstanceOf[Map[String, Any]].get("lines").get
-      .asInstanceOf[List[Map[String, JSerializable]]].size == 1
-  }
-
-  def getDateDimensionFrom(dimensionName: String, eventValuesMap: Map[String, JSerializable]):
-  Map[String, JSerializable] = {
-    val format: DateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-    Map(dimensionName -> format.parse(eventValuesMap.get(dimensionName).get.toString))
-  }
-
-  def getStringDimensionFrom(dimensionName: String, eventValuesMap: Map[String, JSerializable]):
-  Map[String, JSerializable] = Map(dimensionName -> eventValuesMap.get(dimensionName).getOrElse(""))
-
-  def getIntDimensionFrom(dimensionName: String, eventValuesMap: Map[String, JSerializable]):
-  Map[String, JSerializable] = Map(dimensionName -> eventValuesMap.get(dimensionName).get.toString.
-    replaceAll("\\.0*$", "").toInt)
-
-  def getFloatDimensionFrom(dimensionName: String, eventValuesMap: Map[String, JSerializable]):
-  Map[String, JSerializable] = Map(dimensionName -> eventValuesMap.get(dimensionName).get.toString.toFloat)
-
-  def getLongDimensionFrom(dimensionName: String, eventValuesMap: Map[String, JSerializable]):
-  Map[String, JSerializable] = Map(dimensionName -> eventValuesMap.get(dimensionName).get
-    .toString.replaceAll("\\.0*$", "").toLong)
-
   def addGeoTo(event: Map[String, JSerializable]): Map[String, JSerializable] = {
-    val lat = event.get("latitude") match {
+    val lat = event.get("lat") match {
       case Some(value) => if (value != Some(0.0)) Some(value.toString) else None
       case None => None
     }
-    val lon = event.get("longitude") match {
+    val lon = event.get("lon") match {
       case Some(value) => if (value != Some(0.0)) Some(value.toString) else None
       case None => None
     }
@@ -150,6 +64,48 @@ class ShoppingCenterParser(name: String,
   def cloneDimension(dimensionName: String, newDimensionName: String, columnMap: Map[String, String]):
   Map[String, String] = {
     Map(newDimensionName -> columnMap.get(dimensionName).getOrElse("undefined"))
+  }
+
+  override def parse(data: Event): Event = {
+    var event: Option[Event] = None
+    data.keyMap.foreach(e => {
+      if (inputField.equals(e._1)) {
+        val result = e._2 match {
+          case s: String => s
+          case b: Array[Byte] => new String(b)
+        }
+
+        JSON.globalNumberParser = { input: String => input.toDouble }
+        val json = JSON.parseFull(result)
+        event = Some(new Event(json.get.asInstanceOf[Map[String, JSerializable]], Some(e._2)))
+        val columns = event.get.keyMap.get("columns").get.asInstanceOf[List[Map[String, String]]]
+        val columnMap = columns.map(c => c.get("column").get -> c.get("value").getOrElse("")).toMap
+
+        val columnMapExtended = columnMap ++
+          cloneDimension("company_root", "c_r", columnMap) ++
+          cloneDimension("ou_vehicle", "ou_v", columnMap) ++
+          cloneDimension("asset", "a", columnMap) ++
+          cloneDimension("recorded_at_ms", "r_a_m", columnMap) ++
+          cloneDimension("rpm_event_avg", "r_e_a", columnMap) ++
+          cloneDimension("odometer", "o", columnMap) ++
+          cloneDimension("path_id", "p_i", columnMap)
+
+        val odometerMap = stringDimensionToDouble("odometer", "odometerNum", columnMapExtended)
+
+        val rmpAvgMap = stringDimensionToDouble("rpm_event_avg", "rpmAvgNum", columnMapExtended)
+
+        val resultMap = columnMapExtended ++ odometerMap ++ rmpAvgMap
+
+        event = Some(new Event((resultMap.asInstanceOf[Map[String, JSerializable]] ++ addGeoTo(resultMap))
+          .filter(m => (m._2.toString != "") && outputFields.contains(m._1)), None))
+      }
+    })
+
+    val parsedEvent = event match {
+      case Some(x) => new Event(data.keyMap ++ x.keyMap)
+      case None => data
+    }
+    parsedEvent
   }
 
 }
