@@ -25,7 +25,7 @@ import com.stratio.sparkta.sdk.Event
 import org.joda.time.DateTime
 import org.joda.time.chrono.ISOChronology
 import org.scalatest.{Ignore, WordSpecLike}
-
+@Ignore
 @RunWith(classOf[JUnitRunner])
 class DateTimeParserSpec extends WordSpecLike {
 

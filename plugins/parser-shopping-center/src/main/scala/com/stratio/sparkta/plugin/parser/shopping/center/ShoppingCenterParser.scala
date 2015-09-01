@@ -35,11 +35,11 @@ class ShoppingCenterParser(name: String,
   extends Parser(name, order, inputField, outputFields, properties) with SLF4JLogging {
 
   def addGeoTo(event: Map[String, JSerializable]): Map[String, JSerializable] = {
-    val lat = event.get("lat") match {
+    val lat = event.get("latitude") match {
       case Some(value) => if (value != Some(0.0)) Some(value.toString) else None
       case None => None
     }
-    val lon = event.get("lon") match {
+    val lon = event.get("longitude") match {
       case Some(value) => if (value != Some(0.0)) Some(value.toString) else None
       case None => None
     }
@@ -61,11 +61,39 @@ class ShoppingCenterParser(name: String,
     }
   }
 
+  def stringDimensionToFloat(dimensionName: String, newDimensionName: String, columnMap: Map[String, Any]):
+  Map[String, JSerializable] = {
+    columnMap.get(dimensionName) match {
+      case Some(x: Float) => Map(newDimensionName -> x)
+      case Some(x: String) => if (x == "") Map() else Map(newDimensionName -> x.toFloat)
+      case Some(_) => Map(newDimensionName -> columnMap.get(dimensionName).getOrElse("0").toString.toFloat)
+      case None => Map()
+    }
+  }
+  def stringDimensionToInt(dimensionName: String, newDimensionName: String, columnMap: Map[String, Any]):
+  Map[String, JSerializable] = {
+    columnMap.get(dimensionName) match {
+      case Some(x: Int) => Map(newDimensionName -> x)
+      case Some(x: String) => if (x == "") Map() else Map(newDimensionName -> x.toInt)
+      case Some(_) => Map(newDimensionName -> columnMap.get(dimensionName).getOrElse("0").toString.
+        replaceAll("\\.0*$", "").toInt)
+      case None => Map()
+    }
+  }
+
+  def getDateDimensionFrom(dimensionName: String, eventValuesMap: Map[String, JSerializable]):
+  Map[String, JSerializable] = {
+    val format: DateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+    Map(dimensionName -> format.parse(eventValuesMap.get(dimensionName).get.toString))
+  }
+
+
   def cloneDimension(dimensionName: String, newDimensionName: String, columnMap: Map[String, String]):
   Map[String, String] = {
     Map(newDimensionName -> columnMap.get(dimensionName).getOrElse("undefined"))
   }
 
+  //scalastyle:off
   override def parse(data: Event): Event = {
     var event: Option[Event] = None
     data.keyMap.foreach(e => {
@@ -83,10 +111,9 @@ class ShoppingCenterParser(name: String,
 
         val columnMapExtended = columnMap ++
           cloneDimension("order_id", "order_id", columnMap) ++
-          cloneDimension("timestamp", "timestamp", columnMap) ++
+          getDateDimensionFrom("timestamp", columnMap) ++
           cloneDimension("day_time_zone", "day_time_zone", columnMap) ++
           cloneDimension("client_id", "client_id", columnMap) ++
-          cloneDimension("credit_card", "credit_card", columnMap) ++
           cloneDimension("payment_method", "payment_method", columnMap) ++
           cloneDimension("shopping_center", "shopping_center", columnMap) ++
           cloneDimension("channel", "channel", columnMap) ++
@@ -96,17 +123,26 @@ class ShoppingCenterParser(name: String,
           cloneDimension("total_amount", "total_amount", columnMap) ++
           cloneDimension("total_products", "total_products", columnMap) ++
           cloneDimension("order_size", "order_size", columnMap)
+          val totalAmount = stringDimensionToFloat("total_amount", "total_amount", columnMapExtended)
+          val totalProducts = stringDimensionToInt("total_products", "total_products", columnMapExtended)
 
-//        val odometerMap = stringDimensionToDouble("odometer", "odometerNum", columnMapExtended)
-//
-//        val rmpAvgMap = stringDimensionToDouble("rpm_event_avg", "rpmAvgNum", columnMapExtended)
+          var resultMap = columnMapExtended ++ totalAmount ++ totalProducts
 
-//        val resultMap = columnMapExtended ++ odometerMap ++ rmpAvgMap
+          if (columnMap.get("lines").isDefined && !columnMap.get("lines").get.contains("},{")){
 
-        val resultMap = columnMapExtended
+            val pro = columnMapExtended.get("lines").get.asInstanceOf[String].drop(1).dropRight(1)
+            val json = JSON.parseFull(pro)
+            val quantity = stringDimensionToInt("quantity", "quantity", json.get.asInstanceOf[Map[String, JSerializable]])
+            val product = cloneDimension("product", "product", json.get.asInstanceOf[Map[String, String]])
+            val family = cloneDimension("family", "family", json.get.asInstanceOf[Map[String, String]])
+            val price = stringDimensionToFloat("price", "price", json.get.asInstanceOf[Map[String, JSerializable]])
+
+            resultMap = resultMap ++ quantity ++ product ++ family ++ price
+          }
 
         event = Some(new Event((resultMap.asInstanceOf[Map[String, JSerializable]] ++ addGeoTo(resultMap))
           .filter(m => (m._2.toString != "") && outputFields.contains(m._1)), None))
+        event
       }
     })
 
