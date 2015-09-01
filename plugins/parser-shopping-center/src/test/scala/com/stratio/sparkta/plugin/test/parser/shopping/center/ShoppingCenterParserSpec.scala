@@ -34,7 +34,7 @@ class ShoppingCenterParserSpec extends WordSpecLike {
       val myJson1 =
         """{"timestamp":"2015-08-28 14:34:00","day_time_zone":"afternoon","client_id":481,
           |"payment_method":"creditcard","credit_card":9999888877776666,"shopping_center":"Valencia",
-          |"channel":"ONLINE","city":"Madrid","country":"Spain","employee":27,"total_amount":1876.31,
+          |"latitude":40.4167754,"longitude":-3.7037902,"channel":"ONLINE","city":"Madrid","country":"Spain","employee":27,"total_amount":1876.31,
           |"total_products":3,"order_size":"MEDIUM","lines":[{"product":"PEANUTS","family":"Feeding","quantity":1,
           |"price":25.72},{"product":"VINEGAR","family":"Feeding","quantity":2,"price":35.54},{"product":"MILK",
           |"family":"Feeding","quantity":3,"price":8.08}]}""".stripMargin
@@ -51,7 +51,7 @@ class ShoppingCenterParserSpec extends WordSpecLike {
       val myJson1 =
         """{"timestamp":"2015-08-28 14:34:00","day_time_zone":"afternoon","client_id":481,
           |"payment_method":"creditcard","credit_card":9999888877776666,"shopping_center":"Valencia",
-          |"channel":"ONLINE","city":"Madrid","country":"Spain","employee":27,"total_amount":1876.31,
+          |"latitude":40.4167754,"longitude":-3.7037902,"channel":"ONLINE","city":"Madrid","country":"Spain","employee":27,"total_amount":1876.31,
           |"total_products":3,"order_size":"MEDIUM","lines":[{"product":"PEANUTS","family":"Feeding","quantity":1,
           |"price":25.72}]}""".stripMargin
 

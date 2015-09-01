@@ -47,39 +47,42 @@ class ShoppingCenterParser(name: String,
         JSON.globalNumberParser = { input: String => input.toDouble }
         val json = JSON.parseFull(result)
 
-        event = Some(new Event(json.get.asInstanceOf[Map[String, JSerializable]], Some(e._2)))
+        if (json.isDefined){
+          event = Some(new Event(json.get.asInstanceOf[Map[String, JSerializable]], Some(e._2)))
 
-        val eventValuesMap = event.get.keyMap
+          val eventValuesMap = event.get.keyMap
 
-        val resultMap =
-          getStringDimensionFrom("order_id", eventValuesMap) ++
-            getDateDimensionFrom("timestamp", eventValuesMap) ++
-            getStringDimensionFrom("day_time_zone", eventValuesMap) ++
-            getLongDimensionFrom("client_id", eventValuesMap) ++
-            getStringDimensionFrom("payment_method", eventValuesMap) ++
-            getStringDimensionFrom("credit_card", eventValuesMap) ++
-            getStringDimensionFrom("shopping_center", eventValuesMap) ++
-            getStringDimensionFrom("channel", eventValuesMap) ++
-            getStringDimensionFrom("city", eventValuesMap) ++
-            getStringDimensionFrom("country", eventValuesMap) ++
-            getIntDimensionFrom("employee", eventValuesMap) ++
-            getFloatDimensionFrom("total_amount", eventValuesMap) ++
-            getIntDimensionFrom("total_products", eventValuesMap) ++
-            getStringDimensionFrom("order_size", eventValuesMap) ++
-            getLineOrderDimensions(eventValuesMap)
+          val resultMap =
+            getStringDimensionFrom("order_id", eventValuesMap) ++
+              getDateDimensionFrom("timestamp", eventValuesMap) ++
+              getStringDimensionFrom("day_time_zone", eventValuesMap) ++
+              getLongDimensionFrom("client_id", eventValuesMap) ++
+              getStringDimensionFrom("payment_method", eventValuesMap) ++
+              getStringDimensionFrom("credit_card", eventValuesMap) ++
+              getStringDimensionFrom("shopping_center", eventValuesMap) ++
+              getStringDimensionFrom("channel", eventValuesMap) ++
+              getStringDimensionFrom("city", eventValuesMap) ++
+              getStringDimensionFrom("country", eventValuesMap) ++
+              getIntDimensionFrom("employee", eventValuesMap) ++
+              getFloatDimensionFrom("total_amount", eventValuesMap) ++
+              getIntDimensionFrom("total_products", eventValuesMap) ++
+              getStringDimensionFrom("order_size", eventValuesMap) ++
+              getFloatDimensionFrom("latitude", eventValuesMap) ++
+              getFloatDimensionFrom("longitude", eventValuesMap) ++
+              getLineOrderDimensions(eventValuesMap)
 
-        event = Some(new Event((resultMap.asInstanceOf[Map[String, JSerializable]] ++ addGeoTo(resultMap))
-          .filter(m => (m._2.toString != "") && outputFields.contains(m._1)), None))})
+          event = Some(new Event((resultMap.asInstanceOf[Map[String, JSerializable]] ++ addGeoTo(resultMap))
+            .filter(m => (m._2.toString != "") && outputFields.contains(m._1)), None))}
+        })
         match {
           case Success(event) => event
           case Failure(e) => log.error("For event: " + data, e); None
         }
       }
     })
-
     event match {
       case Some(x) => new Event(data.keyMap ++ x.keyMap)
-      case None => data
+      case None => log.error("For event: " + data); new Event(data.keyMap)
     }
   }
 
