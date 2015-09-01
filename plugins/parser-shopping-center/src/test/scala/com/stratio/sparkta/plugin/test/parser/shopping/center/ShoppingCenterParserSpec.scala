@@ -43,20 +43,18 @@ class ShoppingCenterParserSpec extends WordSpecLike {
       assertResult(false)(result.keyMap.contains("family"))
     }
 
-//    "parse a line order" in {
-//      val myJson1 =
-//        """{"timestamp":"2015-08-28 14:34:00","day_time_zone":"afternoon","client_id":481,
-//          |"payment_method":"creditcard","credit_card":9999888877776666,"shopping_center":"Valencia",
-//          |"latitude":40.4167754,"longitude":-3.7037902,"channel":"ONLINE","city":"Madrid","country":"Spain","employee":27,"total_amount":1876.31,
-//          |"total_products":3,"order_size":"MEDIUM","lines":[{"product":"PEANUTS","family":"Feeding","quantity":1,
-//          |"price":25.72}]}""".stripMargin
-//
-//      val e1 = new Event(Map(Input.RawDataKey -> myJson1))
-//
-//      val result = new ShoppingCenterParser("name", 1, inputField, outputsFieldsOrderLine, Map()).parse(e1)
-//
-//      assertResult(true)(result.keyMap.contains("timestamp"))
-//      assertResult(true)(result.keyMap.contains("family"))
-//    }
+    "parse a line order" in {
+      val myJson1 =
+        """{"operation":"insert","streamName":"c_orders","session_id":"1441090777890","request_id":"1441090837177",
+          |"request":"","timestamp":1441090837177,"columns":[{"column":"order_id","value":"00000000-0000-0000-C000-000000000046"},{"column":"timestamp","value":"2014-12-08 12:22:45"},{"column":"day_time_zone","value":"afternoon"},{"column":"client_id","value":"7"},{"column":"payment_method","value":"credit card"},{"column":"latitude","value":"5.34644"},{"column":"longitude","value":"-74.49147"},{"column":"credit_card","value":"4444333322221111"},{"column":"shopping_center","value":"Barcelona"},{"column":"channel","value":"OFFLINE"},{"column":"city","value":"Barcelona"},{"column":"country","value":"SPAIN"},{"column":"employee","value":"48"},{"column":"total_amount","value":"2880.93"},{"column":"total_products","value":"3"},{"column":"order_size","value":"BIG"},{"column":"lines","value":"[{\"product\":\"PEANUTS\",\"family\":\"Feeding\",\"quantity\":3,\"price\":46.03},{\"product\":\"PIZZA\",\"family\":\"Feeding\",\"quantity\":5,\"price\":23.64},{\"product\":\"SOUP\",\"family\":\"Feeding\",\"quantity\":5,\"price\":48.59}]"}],"userDefined":true}""".stripMargin
+
+
+      val e1 = new Event(Map(Input.RawDataKey -> myJson1))
+
+      val result = new ShoppingCenterParser("name", 1, inputField, outputsFieldsOrderLine, Map()).parse(e1)
+
+      assertResult(true)(result.keyMap.contains("timestamp"))
+      assertResult(true)(result.keyMap.contains("family"))
+    }
   }
 }

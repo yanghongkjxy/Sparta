@@ -82,19 +82,28 @@ class ShoppingCenterParser(name: String,
         val columnMap = columns.map(c => c.get("column").get -> c.get("value").getOrElse("")).toMap
 
         val columnMapExtended = columnMap ++
-          cloneDimension("company_root", "c_r", columnMap) ++
-          cloneDimension("ou_vehicle", "ou_v", columnMap) ++
-          cloneDimension("asset", "a", columnMap) ++
-          cloneDimension("recorded_at_ms", "r_a_m", columnMap) ++
-          cloneDimension("rpm_event_avg", "r_e_a", columnMap) ++
-          cloneDimension("odometer", "o", columnMap) ++
-          cloneDimension("path_id", "p_i", columnMap)
+          cloneDimension("order_id", "order_id", columnMap) ++
+          cloneDimension("timestamp", "timestamp", columnMap) ++
+          cloneDimension("day_time_zone", "day_time_zone", columnMap) ++
+          cloneDimension("client_id", "client_id", columnMap) ++
+          cloneDimension("credit_card", "credit_card", columnMap) ++
+          cloneDimension("payment_method", "payment_method", columnMap) ++
+          cloneDimension("shopping_center", "shopping_center", columnMap) ++
+          cloneDimension("channel", "channel", columnMap) ++
+          cloneDimension("city", "city", columnMap) ++
+          cloneDimension("country", "country", columnMap) ++
+          cloneDimension("employee", "employee", columnMap) ++
+          cloneDimension("total_amount", "total_amount", columnMap) ++
+          cloneDimension("total_products", "total_products", columnMap) ++
+          cloneDimension("order_size", "order_size", columnMap)
 
-        val odometerMap = stringDimensionToDouble("odometer", "odometerNum", columnMapExtended)
+//        val odometerMap = stringDimensionToDouble("odometer", "odometerNum", columnMapExtended)
+//
+//        val rmpAvgMap = stringDimensionToDouble("rpm_event_avg", "rpmAvgNum", columnMapExtended)
 
-        val rmpAvgMap = stringDimensionToDouble("rpm_event_avg", "rpmAvgNum", columnMapExtended)
+//        val resultMap = columnMapExtended ++ odometerMap ++ rmpAvgMap
 
-        val resultMap = columnMapExtended ++ odometerMap ++ rmpAvgMap
+        val resultMap = columnMapExtended
 
         event = Some(new Event((resultMap.asInstanceOf[Map[String, JSerializable]] ++ addGeoTo(resultMap))
           .filter(m => (m._2.toString != "") && outputFields.contains(m._1)), None))
