@@ -177,7 +177,7 @@ trait CassandraDAO extends Closeable with Logging {
       case FloatType => "float"
       case IntegerType => "int"
       case BooleanType => "boolean"
-      case MapType(StringType, LongType, _) => "map<text,intcheckou>"
+      case MapType(StringType, LongType, _) => "map<text,int>"
       case ArrayType(DoubleType, _) => "set<double>"
       case DateType | TimestampType => "timestamp"
       case _ => "blob"
