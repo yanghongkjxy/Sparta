@@ -8,8 +8,8 @@
     "name": "in-kafka",
     "type": "Kafka",
     "configuration": {
-      "topics": "c_lines",
-      "kafkaParams.zookeeper.connect": "10.10.0.6:2181",
+      "topics": "stratio_streaming_data",
+      "kafkaParams.zookeeper.connect": "10.10.0.5:2181",
       "kafkaParams.group.id": "testgroup"
     }
   },
@@ -121,7 +121,7 @@
         "timeDimension": "ts",
         "granularity": "day",
         "interval": 30000,
-        "timeAvailability": 60000
+        "timeAvailability": 60000000
       },
       "dimensions": [
         {
@@ -147,10 +147,10 @@
       "name": "out-cassandra",
       "type": "Cassandra",
       "configuration": {
-        "connectionHost": "52.2.150.53",
+        "connectionHost": "10.10.0.8",
         "connectionPort": "9042",
-        "cluster": "Test Cluster",
-        "keyspace": "shoppingcenter"
+        "cluster": "Stratio Cluster",
+        "keyspace": "shoppingcenterTest"
       }
     }
   ]

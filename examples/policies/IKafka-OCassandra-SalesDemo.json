@@ -1,6 +1,6 @@
 {
   "name": "sales-demo",
-  "id": "123",
+  "id": "1234",
   "description":"sales-demo",
   "sparkStreamingWindow": 2000,
   "checkpointPath": "checkpoint",
@@ -9,8 +9,8 @@
     "name": "in-kafka",
     "type": "Kafka",
     "configuration": {
-      "topics": "demo3",
-      "kafkaParams.zookeeper.connect": "localhost:2181",
+      "topics": "stratio_streaming_data",
+      "kafkaParams.zookeeper.connect": "10.10.0.5:2181",
       "kafkaParams.group.id": "testgroup"
     }
   }
@@ -27,6 +27,8 @@
         "client_id",
         "payment_method",
         "geo",
+        "latitude",
+        "longitude",
         "credit_card",
         "shopping_center",
         "channel",
@@ -122,7 +124,7 @@
         "timeDimension": "ts",
         "granularity": "day",
         "interval": 30000,
-        "timeAvailability": 60000000
+        "timeAvailability": 600000000
       },
       "dimensions": [
         {
@@ -144,38 +146,6 @@
             "inputField": "total_amount"
           }
         },
-        {
-          "name": "sum_tp",
-          "type": "Sum",
-          "configuration": {
-            "inputField": "total_products"
-          }
-        }
-      ]
-    },
-    {
-      "name": "heatMapPerActivity",
-      "checkpointConfig": {
-        "timeDimension": "ts",
-        "granularity": "day",
-        "interval": 30000,
-        "timeAvailability": 60000000
-      },
-      "dimensions": [
-        {
-          "name": "g",
-          "field": "geo",
-          "type": "GeoHash",
-          "precision": "precision12"
-        },
-        {
-          "name": "ts",
-          "field": "timestamp",
-          "type": "DateTime",
-          "precision": "day"
-        }
-      ],
-      "operators": [
         {
           "name": "sum_tp",
           "type": "Sum",
@@ -438,6 +408,50 @@
           }
         }
       ]
+    },
+    {
+      "name": "heatMapPerActivity",
+      "checkpointConfig": {
+        "timeDimension": "ts",
+        "granularity": "day",
+        "interval": 30000,
+        "timeAvailability": 60000000
+      },
+      "dimensions": [
+        {
+          "name": "latitude",
+          "field": "geo",
+          "type": "GeoHash",
+          "precision": "precision12",
+          "configuration": {
+            "coordinate": "latitude"
+          }
+        },
+        {
+          "name": "longitude",
+          "field": "geo",
+          "type": "GeoHash",
+          "precision": "precision12",
+          "configuration": {
+            "coordinate": "longitude"
+          }
+        },
+        {
+          "name": "ts",
+          "field": "timestamp",
+          "type": "DateTime",
+          "precision": "day"
+        }
+      ],
+      "operators": [
+        {
+          "name": "sum_tp",
+          "type": "Sum",
+          "configuration": {
+            "inputField": "total_products"
+          }
+        }
+      ]
     }
   ],
   "outputs": [
@@ -445,10 +459,10 @@
       "name": "out-cassandra",
       "type": "Cassandra",
       "configuration": {
-        "connectionHost": "localhost",
+        "connectionHost": "10.10.0.8",
         "connectionPort": "9042",
-        "cluster": "Test Cluster",
-        "keyspace": "shoppingcenter"
+        "cluster": "Stratio Cluster",
+        "keyspace": "shoppingcenterTest"
       }
     }
   ]

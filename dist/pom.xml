@@ -236,16 +236,16 @@
                                     <architecture>all</architecture>
                                 </configuration>
                             </execution>
-                            <execution>
-                                <id>rpm</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>package-rpm</goal>
-                                </goals>
-                                <configuration>
-                                    <architecture>noarch</architecture>
-                                </configuration>
-                            </execution>
+                            <!--<execution>-->
+                                <!--<id>rpm</id>-->
+                                <!--<phase>package</phase>-->
+                                <!--<goals>-->
+                                    <!--<goal>package-rpm</goal>-->
+                                <!--</goals>-->
+                                <!--<configuration>-->
+                                    <!--<architecture>noarch</architecture>-->
+                                <!--</configuration>-->
+                            <!--</execution>-->
                             <execution>
                                 <id>zip</id>
                                 <phase>package</phase>
