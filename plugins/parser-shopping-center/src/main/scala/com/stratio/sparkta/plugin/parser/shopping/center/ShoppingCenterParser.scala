@@ -83,8 +83,8 @@ class ShoppingCenterParser(name: String,
 
   def getDateDimensionFrom(dimensionName: String, eventValuesMap: Map[String, JSerializable]):
   Map[String, JSerializable] = {
-    val format: DateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-    Map(dimensionName -> format.parse(eventValuesMap.get(dimensionName).get.toString.replace("T"," ")))
+//    val format: DateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+    Map(dimensionName -> new Date(eventValuesMap.get(dimensionName).get.asInstanceOf[Double].toLong))
   }
 
 
@@ -111,7 +111,7 @@ class ShoppingCenterParser(name: String,
 
         val columnMapExtended = columnMap ++
           cloneDimension("order_id", "order_id", columnMap) ++
-          getDateDimensionFrom("timestamp", columnMap) ++
+          getDateDimensionFrom("timestamp", json.get.asInstanceOf[Map[String, JSerializable]]) ++
           cloneDimension("day_time_zone", "day_time_zone", columnMap) ++
           cloneDimension("client_id", "client_id", columnMap) ++
           cloneDimension("payment_method", "payment_method", columnMap) ++
