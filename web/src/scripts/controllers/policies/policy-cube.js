@@ -26,13 +26,9 @@
         vm.cube = CubeModelFactory.getCube();
       }
       vm.policy = PolicyModelFactory.getCurrentPolicy();
-      var models = vm.policy.models;
-      if (models.length > 0) {
-
-        vm.granularityOptions = CubeStaticDataFactory.getGranularityOptions();
-        vm.outputList = models[models.length - 1].outputFields;
-        vm.functionList = CubeStaticDataFactory.getFunctionNames();
-      }
+      vm.granularityOptions = CubeStaticDataFactory.getGranularityOptions();
+      vm.functionList = CubeStaticDataFactory.getFunctionNames();
+      vm.outputList = PolicyModelFactory.getAllModelOutputs();
     }
 
     function addOutputToDimensions(outputName) {
@@ -73,7 +69,7 @@
         resolve: {
           operatorType: function () {
             return functionName;
-          },
+        },
           operatorName: function () {
             var operatorLength = vm.cube.operators.length + 1;
             return functionName.toLowerCase() + operatorLength;
