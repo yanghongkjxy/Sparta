@@ -10,7 +10,7 @@
     "configuration": {
       "topics": "stratio_streaming_data",
       "kafkaParams.zookeeper.connect": "10.10.0.5:2181,10.10.0.6:2181,10.10.0.7:2181",
-      "kafkaParams.group.id": "testgroup"
+      "kafkaParams.group.id": "testgroup2"
     }
   },
   "transformations": [
