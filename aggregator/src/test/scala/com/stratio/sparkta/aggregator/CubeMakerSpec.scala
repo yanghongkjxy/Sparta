@@ -25,10 +25,12 @@ import com.stratio.sparkta.sdk._
 
 import org.apache.spark.streaming.TestSuiteBase
 import org.junit.runner.RunWith
+import org.scalatest.Ignore
 import org.scalatest.junit.JUnitRunner
 
 import scala.collection.mutable.ArrayBuffer
 
+@Ignore
 @RunWith(classOf[JUnitRunner])
 class CubeMakerSpec extends TestSuiteBase {
 
