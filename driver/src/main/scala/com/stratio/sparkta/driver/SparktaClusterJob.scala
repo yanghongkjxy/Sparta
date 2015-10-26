@@ -18,16 +18,10 @@ package com.stratio.sparkta.driver
 
 import java.io.File
 import java.net.URI
-import scala.concurrent.duration._
-import scala.util.{Failure, Success, Try}
 
 import akka.actor.{ActorSystem, Props}
 import akka.pattern.ask
 import akka.util.Timeout
-import com.typesafe.config.ConfigFactory
-import org.apache.commons.io.FileUtils
-import org.apache.curator.framework.CuratorFramework
-
 import com.stratio.sparkta.driver.SparktaJob._
 import com.stratio.sparkta.driver.service.StreamingContextService
 import com.stratio.sparkta.driver.util.{HdfsUtils, PolicyUtils}
@@ -38,6 +32,13 @@ import com.stratio.sparkta.serving.core.models.{AggregationPoliciesModel, Policy
 import com.stratio.sparkta.serving.core.policy.status.PolicyStatusActor.Update
 import com.stratio.sparkta.serving.core.policy.status.{PolicyStatusActor, PolicyStatusEnum}
 import com.stratio.sparkta.serving.core.{CuratorFactoryHolder, SparktaConfig}
+import com.typesafe.config.ConfigFactory
+import org.apache.commons.io.FileUtils
+import org.apache.commons.lang.StringEscapeUtils
+import org.apache.curator.framework.CuratorFramework
+
+import scala.concurrent.duration._
+import scala.util.{Failure, Success, Try}
 
 object SparktaClusterJob extends SparktaSerializer {
 
@@ -49,9 +50,10 @@ object SparktaClusterJob extends SparktaSerializer {
   final val DetailConfigurationIndex = 4
 
   def main(args: Array[String]): Unit = {
-    assert(args.length == 5, s"Invalid number of params: ${args.length}")
+    assert(args.length == 5, s"Invalid number of params: ${args.length}, args: $args")
     Try {
-      initSparktaConfig(args(DetailConfigurationIndex), args(ZookeperConfigurationIndex))
+      initSparktaConfig(StringEscapeUtils.unescapeJavaScript(args(DetailConfigurationIndex)),
+        StringEscapeUtils.unescapeJavaScript(args(ZookeperConfigurationIndex)))
 
       val policyId = args(PolicyIdIndex)
       val curatorFramework = CuratorFactoryHolder.getInstance()
@@ -88,8 +90,9 @@ object SparktaClusterJob extends SparktaSerializer {
   }
 
   def initSparktaConfig(detailConfig: String, zKConfig: String): Unit = {
-    val configStr = s"$detailConfig,$zKConfig".stripPrefix(",").stripSuffix(",")
-    SparktaConfig.initMainConfig(Some(ConfigFactory.parseString(s"{$configStr}").atKey("sparkta")))
+    val configStr = s"${detailConfig.stripPrefix("{").stripSuffix("}")}\n${zKConfig.stripPrefix("{").stripSuffix("}")}"
+    log.info(s"Parsed config: sparkta { $configStr }")
+    SparktaConfig.initMainConfig(Option(ConfigFactory.parseString(s"sparkta{$configStr}")))
   }
 
   def addPluginsAndClasspath(pluginsPath: String, classPath: String): Seq[URI] = {

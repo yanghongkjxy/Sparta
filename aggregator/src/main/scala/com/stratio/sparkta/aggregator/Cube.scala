@@ -33,7 +33,8 @@ import com.stratio.sparkta.serving.core.constants.AppConstant
  *
  * For example, if you're counting events with the dimensions (color, size, flavor) and you
  * want to keep a total count for all (color, size) combinations, you'd specify that using a Cube or
- */gitgit 
+ * multipelexer the output
+ */
 case class Cube(name: String,
                 dimensions: Seq[Dimension],
                 operators: Seq[Operator],
