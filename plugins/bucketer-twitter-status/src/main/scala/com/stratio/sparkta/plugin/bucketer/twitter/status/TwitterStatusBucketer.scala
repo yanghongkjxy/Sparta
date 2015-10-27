@@ -19,18 +19,22 @@ package com.stratio.sparkta.plugin.bucketer.twitter.status
 import java.io
 
 import TwitterStatusBucketer._
+import akka.event.slf4j.SLF4JLogging
 import com.stratio.sparkta.sdk.{Bucketer, BucketType}
 import twitter4j.{Status}
 
-case class TwitterStatusBucketer() extends Bucketer {
+case class TwitterStatusBucketer() extends Bucketer with SLF4JLogging{
 
   override val bucketTypes: Seq[BucketType] =
-    Seq(text, contributors, hastags, places, retweets, urls, mentions, words, identity, location, firstHastag)
+    Seq(text, contributors, hastags, places, retweets, urls, mentions, words, identity, location, firstHastag, name
+    , language, url)
 
   override def bucket(value: io.Serializable): Map[BucketType, io.Serializable] = {
-    bucketTypes.map(bucketType =>
-      bucketType -> TwitterStatusBucketer.bucket(value.asInstanceOf[Status], bucketType)
-    ).toMap
+    bucketTypes.map(bucketType => value match {
+      case s: Status => bucketType -> TwitterStatusBucketer.bucket(value.asInstanceOf[Status], bucketType)
+      case _ => log.info(s"########### Avoiding value ${value}"); bucketType -> ""
+    }
+    ).toMap[BucketType, io.Serializable]
   }
 
 }
@@ -54,9 +58,10 @@ object TwitterStatusBucketer {
       value.getUserMentionEntities.map(_.getName)
     else ""
     val getWordsCount = value.getText.split(" ").length
-    val getLocation : io.Serializable = value.getUser.getLocation.toLowerCase
+    val getLocation : io.Serializable = Option(value.getUser.getLocation).getOrElse("").toLowerCase
     val getLanguage = value.getUser.getLang
     val getName = value.getUser.getName
+    val getUrl = if (value.getURLEntities != null) value.getURLEntities.map(_.getURL).headOption.getOrElse("") else ""
 
     (bucketType match {
       case a if a == text => getText
@@ -72,6 +77,7 @@ object TwitterStatusBucketer {
       case l if l == location => getLocation
       case n if n == name => getName
       case l if l == language => getLanguage
+      case s if s == url => getUrl
 
     }).toString.asInstanceOf[io.Serializable]
   }
@@ -90,6 +96,7 @@ object TwitterStatusBucketer {
   val location = new BucketType("location")
   val name = new BucketType("name")
   val language = new BucketType("language")
+  val url = new BucketType("url")
 
 
   override def toString : String = s"TwitterStatusBucketer(" +

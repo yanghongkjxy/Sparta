@@ -1,5 +1,5 @@
 {
-  "name": "policy-Twitter-ElasticSearch",
+  "name": "policy-demo",
   "duration": 10000,
   "saveRawData": "false",
   "rawDataParquetPath": "myTestParquetPath",
@@ -8,10 +8,11 @@
       "name": "in-socket",
       "elementType": "TwitterInput",
       "configuration": {
-        "consumerKey": "*****",
-        "consumerSecret": "*****",
-        "accessToken": "*****",
-        "accessTokenSecret": "*****"
+        "termsOfSearch": "#BigData",
+        "consumerKey": "***",
+        "consumerSecret": "***",
+        "accessToken": "***",
+        "accessTokenSecret": "***"
       }
     }
   ],
@@ -21,12 +22,20 @@
       "name": "status"
     },
     {
-      "dimensionType": "PassthroughBucketer",
-      "name": "userLocation"
+      "dimensionType": "TwitterStatusBucketer",
+      "name": "name"
     },
     {
       "dimensionType": "PassthroughBucketer",
       "name": "wordsN"
+    },
+    {
+      "dimensionType": "PassthroughBucketer",
+      "name": "url"
+    },
+    {
+      "dimensionType": "PassthroughBucketer",
+      "name": "countryCode"
     },
     {
       "dimensionType": "DateTimeBucketer",
@@ -42,19 +51,95 @@
       "dimensionAndBucketTypes": [
         {
           "dimensionName": "status",
-          "bucketType": "hastags"
+          "bucketType": "name"
         },
+        {
+          "dimensionName": "timestamp",
+          "bucketType": "minute"
+        }
+      ]
+    },
+    {
+      "dimensionAndBucketTypes": [
+        {
+          "dimensionName": "timestamp",
+          "bucketType": "minute"
+        }
+      ]
+    },
+    {
+      "dimensionAndBucketTypes": [
         {
           "dimensionName": "status",
           "bucketType": "firsthastag"
         },
         {
-          "dimensionName": "status",
-          "bucketType": "retweets"
+          "dimensionName": "timestamp",
+          "bucketType": "minute"
+        }
+      ]
+    },
+    {
+      "dimensionAndBucketTypes": [
+        {
+          "dimensionName": "url",
+          "bucketType": "identity"
         },
         {
+          "dimensionName": "timestamp",
+          "bucketType": "minute"
+        }
+      ]
+    },
+    {
+      "dimensionAndBucketTypes": [
+        {
+          "dimensionName": "status",
+          "bucketType": "language"
+        },
+        {
+          "dimensionName": "timestamp",
+          "bucketType": "minute"
+        }
+      ]
+    },
+    {
+      "dimensionAndBucketTypes": [
+        {
+          "dimensionName": "status",
+          "bucketType": "firsthastag"
+        },
+        {
+          "dimensionName": "url",
+          "bucketType": "identity"
+        },
+        {
+          "dimensionName": "timestamp",
+          "bucketType": "minute"
+        }
+      ]
+    },
+    {
+      "dimensionAndBucketTypes": [
+        {
           "dimensionName": "geolocation",
-          "bucketType": "precision5"
+          "bucketType": "precision7"
+        },
+        {
+          "dimensionName": "status",
+          "bucketType": "name"
+        },
+        {
+          "dimensionName": "timestamp",
+          "bucketType": "minute"
+        }
+      ]
+    },
+    {
+      "dimensionAndBucketTypes": [
+        {
+          "dimensionName": "countryCode",
+          "bucketType": "identity"
         },
         {
           "dimensionName": "timestamp",
@@ -75,7 +160,7 @@
         "granularity": "minute",
         "isAutoCalculateId": "false",
         "dateType": "timestamp",
-        "indexMapping": "day"
+        "indexMapping": "none"
       }
     }
   ],
@@ -84,76 +169,6 @@
       "name": "count-operator",
       "elementType": "CountOperator",
       "configuration": {}
-    },
-    {
-      "name": "sum-operator",
-      "elementType": "SumOperator",
-      "configuration": {
-        "inputField": "wordsN"
-      }
-    },
-    {
-      "name": "max-operator",
-      "elementType": "MaxOperator",
-      "configuration": {
-        "inputField": "wordsN"
-      }
-    },
-    {
-      "name": "min-operator",
-      "elementType": "MinOperator",
-      "configuration": {
-        "inputField": "wordsN"
-      }
-    },
-    {
-      "name": "avg-operator",
-      "elementType": "AvgOperator",
-      "configuration": {
-        "inputField": "wordsN"
-      }
-    },
-    {
-      "name": "median-operator",
-      "elementType": "MedianOperator",
-      "configuration": {
-        "inputField": "wordsN"
-      }
-    },
-    {
-      "name": "variance-operator",
-      "elementType": "VarianceOperator",
-      "configuration": {
-        "inputField": "wordsN"
-      }
-    },
-    {
-      "name": "stddev-operator",
-      "elementType": "StddevOperator",
-      "configuration": {
-        "inputField": "wordsN"
-      }
-    },
-    {
-      "name": "fullText-operator",
-      "elementType": "FullTextOperator",
-      "configuration": {
-        "inputField": "userLocation"
-      }
-    },
-    {
-      "name": "lastValue-operator",
-      "elementType": "LastValueOperator",
-      "configuration": {
-        "inputField": "retweets"
-      }
-    },
-    {
-      "name": "accumulator-operator",
-      "elementType": "AccumulatorOperator",
-      "configuration": {
-        "inputField": "wordsN"
-      }
     }
   ]
 }
