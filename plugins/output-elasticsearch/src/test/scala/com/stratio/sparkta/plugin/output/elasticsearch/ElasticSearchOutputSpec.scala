@@ -44,7 +44,7 @@ class ElasticSearchOutputSpec extends FlatSpec with ShouldMatchers {
 
     def getInstance(host: String = "localhost", port: Int = localPort): ElasticSearchOutput =
       new ElasticSearchOutput("ES-out",
-        Map("nodes" -> new JsoneyString( s"""[{"node":"$host","defaultPort":"$port"}]"""), "dateType" -> "timestamp"),
+        Map("nodes" -> s"""[{"node":"$host","defaultPort":"$port"}]""", "dateType" -> "timestamp"),
         None, None)
   }
 
@@ -65,7 +65,7 @@ class ElasticSearchOutputSpec extends FlatSpec with ShouldMatchers {
     val extraFields = Seq(StructField("id", StringType, false), StructField("timestamp", TimestampType, false))
     val expectedSchema = StructType(extraFields ++ baseFields)
     val expectedTableSchema = tableSchema.copy(tableName = "id_sparktaTable_timestamp", schema = expectedSchema)
-    val properties = Map("nodes" -> new JsoneyString( """[{"node":"localhost","defaultPort":"9200"}]"""), "dateType"
+    val properties = Map("nodes" -> """[{"node":"localhost","defaultPort":"9200"}]""", "dateType"
       -> "timestamp")
     override val output = new ElasticSearchOutput("ES-out", properties, None, bcSchema = Some(Seq(tableSchema)))
   }
@@ -112,7 +112,7 @@ class ElasticSearchOutputSpec extends FlatSpec with ShouldMatchers {
 
   "ElasticSearchOutput" should "format properties" in new NodeValues {
     output.nodes should be(Seq(("localhost", 9200)))
-    outputMultipleNodes.nodes should be(Seq(("host-a", 9300),("host-b", 9301)))
+    outputMultipleNodes.nodes should be(Seq(("host-a", 9300), ("host-b", 9301)))
     output.dateType should be(TypeOp.Timestamp)
     output.isAutoCalculateId should be(true)
     output.isLocalhost should be(true)

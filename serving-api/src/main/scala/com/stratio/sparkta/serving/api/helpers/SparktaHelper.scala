@@ -61,7 +61,7 @@ with SparktaSerializer {
       else AkkaConstant.DefaultControllerActorInstances
       val streamingActorInstances = if (!akkaConfig.isEmpty) akkaConfig.getInt(AkkaConstant.ControllerActorInstances)
       else AkkaConstant.DefaultStreamingActorInstances
-      val policyStatusActor = system.actorOf(Props(new PolicyStatusActor(curatorFramework)),
+      val policyStatusActor = system.actorOf(Props(new PolicyStatusActor()),
         AkkaConstant.PolicyStatusActor)
       val streamingContextService = new StreamingContextService(Some(policyStatusActor), SparktaConfig.mainConfig)
       implicit val actors = Map(

@@ -54,7 +54,7 @@ class ElasticSearchOutput(keyName: String,
 
   override def isAutoCalculateId: Boolean = true
 
-  override val nodes = properties.getHostPortConfs("nodes", DefaultNode, DefaultPort)
+  override val nodes = getHostPortConfs("nodes", DefaultNode, DefaultPort)
 
   @transient private lazy val elasticClient = {
     if (isLocalhost) ElasticClient.fromNode(NodeBuilder.nodeBuilder().client(true).node())
@@ -108,5 +108,12 @@ class ElasticSearchOutput(keyName: String,
       case StringType => structField.name typed FieldType.StringType index "not_analyzed"
       case _ => structField.name typed FieldType.BinaryType
     })
+  }
+
+  def getHostPortConfs(key: String, defaultHost: String, defaultPort: String): Seq[(String, Int)] = {
+
+    val conObj = properties.getConnectionChain(key)
+    conObj.map(c =>
+      (c.get("node").getOrElse(defaultHost), c.get("defaultPort").getOrElse(defaultPort).toInt))
   }
 }

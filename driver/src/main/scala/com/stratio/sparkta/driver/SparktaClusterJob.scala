@@ -72,9 +72,7 @@ object SparktaClusterJob {
           new EnumNameSerializer(StreamingContextStatusEnum) +
           new JsoneyStringSerializer() +
           new EnumNameSerializer(PolicyStatusEnum)
-
-      val policyStatusActor = system.actorOf(Props(new PolicyStatusActor(curatorFramework)),
-        AkkaConstant.PolicyStatusActor)
+      val policyStatusActor = system.actorOf(Props[PolicyStatusActor], AkkaConstant.PolicyStatusActor)
 
       Try {
         policyStatusActor ? Update(PolicyStatusModel(policyId, PolicyStatusEnum.Starting))
