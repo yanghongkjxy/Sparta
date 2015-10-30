@@ -40,11 +40,11 @@ trait ElasticSearchDAO extends Closeable {
   final val DEFAULT_NODE = "localhost"
   final val DEFAULT_PORT = "9200"
 
-
-
   def nodes: Seq[(String,Int)]
 
   def idField: Option[String] = None
+
+  def clusterName: String = "elasticsearch"
 
   def defaultIndexMapping: Option[String] = None
 

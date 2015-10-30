@@ -204,7 +204,8 @@
       "configuration": {
         "nodes": [{"node":"localhost","defaultPort":"9200"}],
         "isAutoCalculateId": "false",
-        "indexMapping": "day"
+        "indexMapping": "day",
+        "clusterName": "zipote"
       }
     }
   ]

@@ -18,12 +18,13 @@ package com.stratio.sparkta.plugin.output.elasticsearch
 
 import java.io.{Serializable => JSerializable}
 
-import com.sksamuel.elastic4s.ElasticClient
+import com.sksamuel.elastic4s.{ElasticsearchClientUri, ElasticClient}
 import com.sksamuel.elastic4s.ElasticDsl._
 import com.sksamuel.elastic4s.mappings._
 import org.apache.spark.sql._
 import org.apache.spark.sql.types._
 import org.apache.spark.streaming.dstream.DStream
+import org.elasticsearch.common.settings.ImmutableSettings
 import org.elasticsearch.node.NodeBuilder
 import org.elasticsearch.spark.sql._
 
@@ -51,6 +52,8 @@ class ElasticSearchOutput(keyName: String,
 
   override def isAutoCalculateId: Boolean = true
 
+  override val clusterName = properties.getString("clusterName", "elasticsearch")
+
   override val nodes = getHostPortConfs("nodes", DEFAULT_NODE, DEFAULT_PORT)
 
   @transient private val elasticClient = {
@@ -58,7 +61,12 @@ class ElasticSearchOutput(keyName: String,
     if (nodes(0)._1.equals("localhost") || nodes(0)._1.equals("127.0.0.1")) {
       ElasticClient.fromNode(NodeBuilder.nodeBuilder().client(true).node())
     } else {
-      ElasticClient.remote(nodes(0)._1, nodes(0)._2)
+      val settings: ImmutableSettings.Builder = ImmutableSettings.settingsBuilder()
+        .put("cluster.name", clusterName)
+        .put("http.publish_port", "9200")
+
+      val uri = s"elasticsearch://${nodes.map(x => s"${x._1}:${x._2}").mkString(",")}"
+      ElasticClient.remote(settings.build(), ElasticsearchClientUri(uri))
     }
   }
 
@@ -112,7 +120,6 @@ class ElasticSearchOutput(keyName: String,
   }
 
   def getHostPortConfs(key: String, defaultHost: String, defaultPort: String): Seq[(String, Int)] = {
-
     val conObj = properties.getConnectionChain(key)
     conObj.map(c =>
       (c.get("node").getOrElse(defaultHost), c.get("defaultPort").getOrElse(defaultPort).toInt))

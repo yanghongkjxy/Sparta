@@ -229,6 +229,15 @@
       ]
     },
     {
+      "propertyId": "clusterName",
+      "propertyName": "_CLUSTERNAME_",
+      "propertyType": "text",
+      "regexp": "",
+      "default": "elasticsearch",
+      "required": true,
+      "qa": "fragment-details-elasticSearch-clusterName"
+    },
+    {
       "propertyId": "idField",
       "propertyName": "_ID_FIELD_",
       "propertyType": "text",
