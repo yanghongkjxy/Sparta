@@ -47,3 +47,7 @@ If it's already installed, to run Zookeeper just::
 **I don't understand where the name of the database and the collections are coming from**
 
 - For the supported outputs the name of the collections are formed with the name of the dimensions of the cube. The name of the database/keyspace is created from one of the output parameter in the policy.
+
+**I have a few models, and I want to delete the first one but the delete button is available just for the last model. Why?**
+
+- This is the normal behaviour of the application and it's because the models can be related to each other. Models has to be deleted from the last one to the first one.
