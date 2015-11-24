@@ -111,7 +111,7 @@ class ShoppingCenterParser(name: String,
 
         val columnMapExtended = columnMap ++
           cloneDimension("order_id", "order_id", columnMap) ++
-          getDateDimensionFrom("timestamp", "datetime", columnMap) ++
+          getDateDimensionFrom("timestamp", "eventDatetime", columnMap) ++
           cloneDimension("day_time_zone", "day_time_zone", columnMap) ++
           cloneDimension("client_id", "client_id", columnMap) ++
           cloneDimension("payment_method", "payment_method", columnMap) ++
