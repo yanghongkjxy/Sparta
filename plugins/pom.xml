@@ -1,4 +1,3 @@
-
 <!--
 
     Copyright (C) 2014 Stratio (http://stratio.com)
@@ -34,14 +33,6 @@
         <module>field-tag</module>
         <module>field-hierarchy</module>
         <module>field-arrayText</module>
-        <module>output-mongodb</module>
-        <module>output-elasticsearch</module>
-        <module>output-cassandra</module>
-        <module>output-redis</module>
-        <module>output-print</module>
-        <module>output-csv</module>
-        <module>output-parquet</module>
-        <module>output-solr</module>
         <module>operator-count</module>
         <module>operator-sum</module>
         <module>operator-max</module>
@@ -68,6 +59,9 @@
         <module>input-rabbitMQ</module>
         <module>parser-type</module>
         <module>parser-ingestion</module>
+        <module>output-print</module>
+        <module>output-csv</module>
+        <module>output-solr</module>
     </modules>
 
     <dependencies>
@@ -102,6 +96,24 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <profiles>
+        <profile>
+            <id>default-outputs</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <modules>
+                <module>output-mongodb</module>
+                <module>output-elasticsearch</module>
+                <module>output-cassandra</module>
+                <module>output-redis</module>
+                <module>output-parquet</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>spark-1.3</id>
+        </profile>
+    </profiles>
 
     <build>
         <plugins>
