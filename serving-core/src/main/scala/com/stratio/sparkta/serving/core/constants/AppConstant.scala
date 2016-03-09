@@ -99,6 +99,7 @@ object AppConstant {
     "TwitterStatus" -> s"field-twitter-status$pluginExtension",
     "Flume" -> s"input-flume$pluginExtension",
     "Kafka" -> s"input-kafka$pluginExtension",
+    "KafkaDirect" -> s"input-kafka$pluginExtension",
     "Flume" -> s"input-flume$pluginExtension",
     "RabbitMQ" -> s"input-rabbitMQ$pluginExtension",
     "Socket" -> s"input-socket$pluginExtension",

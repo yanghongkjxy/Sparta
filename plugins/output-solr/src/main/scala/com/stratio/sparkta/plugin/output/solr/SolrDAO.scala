@@ -24,6 +24,7 @@ import javax.xml.transform.stream.StreamResult
 import javax.xml.transform.{OutputKeys, TransformerFactory}
 
 import org.apache.commons.io.FileUtils
+import org.apache.http.impl.client.SystemDefaultHttpClient
 import org.apache.solr.client.solrj.SolrClient
 import org.apache.solr.client.solrj.impl.{CloudSolrClient, HttpSolrClient}
 import org.apache.solr.client.solrj.request.CoreAdminRequest
@@ -149,8 +150,10 @@ trait SolrDAO extends Closeable with Logging {
   override def close(): Unit = {}
 
   def getSolrServer(zkHost: String, isCloud: Boolean): SolrClient = {
-    if (isCloud)
-      new CloudSolrClient(zkHost)
+    if (isCloud){
+      val httpClient = new SystemDefaultHttpClient
+      new CloudSolrClient(zkHost,httpClient);
+    }
     else
       new HttpSolrClient("http://" + zkHost + "/solr")
   }
