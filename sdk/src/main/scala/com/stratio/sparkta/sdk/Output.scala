@@ -120,10 +120,10 @@ abstract class Output(keyName: String,
               tableSchemaTime.schema)
             Try(upsert(dataFrame, tableSchemaTime.tableName, tschemaFiltered.timeDimension)) match {
               case Success(_) => log.debug(s"Data stored in ${tableSchemaTime.tableName}")
-              case Failure(_) => {
+              case Failure(ex) => {
                 log.error(s"Something goes wrong. Table: ${tableSchemaTime.tableName}")
                 log.error(s"Schema. ${dataFrame.schema}")
-                log.error(s"Head element. ${dataFrame.head}")
+                log.error(s"Head element. ${dataFrame.show}", ex)
               }
             }
           })

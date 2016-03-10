@@ -77,10 +77,12 @@ class SolrOutput(keyName: String,
 
   override def doPersist(stream: DStream[(DimensionValuesTime, Map[String, Option[Any]])]): Unit =
     if (validConfiguration) persistDataFrame(stream)
-    else log.info(SolrConfigurationError)
+    else log.error(SolrConfigurationError)
 
+  @transient
   override def upsert(dataFrame: DataFrame, tableName: String, timeDimension: String): Unit = {
     val slrRelation = new SolrRelation(sqlContext, getConfig(connection, tableName), dataFrame)
+    dataFrame.collect().foreach(println)
     slrRelation.insert(dataFrame, true)
   }
 }

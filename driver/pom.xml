@@ -27,6 +27,11 @@
     <artifactId>driver</artifactId>
     <dependencies>
         <dependency>
+            <groupId>com.lucidworks.spark</groupId>
+            <artifactId>spark-solr</artifactId>
+            <version>1.1.2</version>
+        </dependency>
+        <dependency>
             <groupId>com.stratio.sparkta</groupId>
             <artifactId>aggregator</artifactId>
         </dependency>
