@@ -1,4 +1,3 @@
-
 <!--
 
     Copyright (C) 2014 Stratio (http://stratio.com)
@@ -30,44 +29,39 @@
     <modules>
         <module>field-dateTime</module>
         <module>field-default</module>
-        <module>field-geoHash</module>
-        <module>field-tag</module>
-        <module>field-hierarchy</module>
-        <module>field-arrayText</module>
-        <module>output-mongodb</module>
-        <module>output-elasticsearch</module>
-        <module>output-cassandra</module>
-        <module>output-redis</module>
-        <module>output-print</module>
-        <module>output-csv</module>
-        <module>output-parquet</module>
-        <module>output-solr</module>
+        <!--<module>field-geoHash</module>-->
+        <!--<module>field-tag</module>-->
+        <!--<module>field-hierarchy</module>-->
+        <!--<module>field-arrayText</module>-->
         <module>operator-count</module>
         <module>operator-sum</module>
-        <module>operator-max</module>
-        <module>operator-min</module>
-        <module>operator-range</module>
-        <module>operator-avg</module>
-        <module>operator-median</module>
-        <module>operator-variance</module>
-        <module>operator-stddev</module>
-        <module>operator-fullText</module>
-        <module>operator-firstValue</module>
-        <module>operator-lastValue</module>
-        <module>operator-accumulator</module>
-        <module>operator-entityCount</module>
-        <module>operator-totalEntityCount</module>
-        <module>operator-mode</module>
+        <!--<module>operator-max</module>-->
+        <!--<module>operator-min</module>-->
+        <!--<module>operator-range</module>-->
+        <!--<module>operator-avg</module>-->
+        <!--<module>operator-median</module>-->
+        <!--<module>operator-variance</module>-->
+        <!--<module>operator-stddev</module>-->
+        <!--<module>operator-fullText</module>-->
+        <!--<module>operator-firstValue</module>-->
+        <!--<module>operator-lastValue</module>-->
+        <!--<module>operator-accumulator</module>-->
+        <!--<module>operator-entityCount</module>-->
+        <!--<module>operator-totalEntityCount</module>-->
+        <!--<module>operator-mode</module>-->
         <module>input-kafka</module>
-        <module>input-flume</module>
-        <module>input-socket</module>
-        <module>input-twitter</module>
-        <module>input-websocket</module>
-        <module>parser-datetime</module>
+        <!--<module>input-flume</module>-->
+        <!--<module>input-socket</module>-->
+        <!--<module>input-twitter</module>-->
+        <!--<module>input-websocket</module>-->
+        <!--<module>parser-datetime</module>-->
         <module>parser-morphlines</module>
-        <module>input-rabbitMQ</module>
-        <module>parser-type</module>
-        <module>parser-ingestion</module>
+        <!--<module>input-rabbitMQ</module>-->
+        <!--<module>parser-type</module>-->
+        <!--<module>parser-ingestion</module>-->
+        <!--<module>output-print</module>-->
+        <!--<module>output-csv</module>-->
+        <module>output-solr</module>
     </modules>
 
     <dependencies>
@@ -102,6 +96,24 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <profiles>
+        <profile>
+            <id>default-outputs</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <modules>
+                <module>output-mongodb</module>
+                <module>output-elasticsearch</module>
+                <module>output-cassandra</module>
+                <module>output-redis</module>
+                <module>output-parquet</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>spark-1.3</id>
+        </profile>
+    </profiles>
 
     <build>
         <plugins>
