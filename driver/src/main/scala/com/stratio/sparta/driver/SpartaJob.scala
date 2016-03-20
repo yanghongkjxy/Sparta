@@ -161,8 +161,12 @@ object SpartaJob extends SLF4JLogging with SpartaSerializer {
   }
 
   def executeParsers(row: Row, parsers: Seq[Parser]): Option[Row] = {
-    if (parsers.size == 1) parseEvent(row, parsers.head, true)
-    else parseEvent(row, parsers.head).flatMap(eventParsed => executeParsers(eventParsed, parsers.drop(1)))
+    if (row.size != 0){
+      if (parsers.size == 1) parseEvent(row, parsers.head, true)
+      else parseEvent(row, parsers.head).flatMap(eventParsed => executeParsers(eventParsed, parsers.drop(1)))
+    } else {
+      None
+    }
   }
 
   def parseEvent(row: Row, parser: Parser, removeRaw: Boolean = false): Option[Row] =
