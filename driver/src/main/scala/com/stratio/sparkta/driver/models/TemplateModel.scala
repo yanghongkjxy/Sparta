@@ -16,9 +16,6 @@
 
 package com.stratio.sparkta.driver.models
 
-import com.stratio.sparkta.sdk.JsoneyString
-import org.codehaus.jettison.json.JSONString
-
 /**
  * Class that represents a template used by the frontend to render inputs/outputs.
  * @author anistal
