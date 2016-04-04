@@ -57,16 +57,16 @@ class MongoDbOutput(keyName: String,
   }
 
   override def upsert(dataFrame: DataFrame, options: Map[String, String]): Unit = {
-    val tableName = getTableNameFromOptions(options)
-    val isAutoCalculatedId = getIsAutoCalculatedIdFromOptions(options)
-    val timeDimension = getTimeFromOptions(options)
-    val dataFrameOptions = getDataFrameOptions(tableName, dataFrame.schema, timeDimension, isAutoCalculatedId)
-
-    dataFrame.write
-      .format(MongoDbSparkDatasource)
-      .mode(Append)
-      .options(dataFrameOptions)
-      .save()
+//    val tableName = getTableNameFromOptions(options)
+//    val isAutoCalculatedId = getIsAutoCalculatedIdFromOptions(options)
+//    val timeDimension = getTimeFromOptions(options)
+//    val dataFrameOptions = getDataFrameOptions(tableName, dataFrame.schema, timeDimension, isAutoCalculatedId)
+//
+//    dataFrame.write
+//      .format(MongoDbSparkDatasource)
+//      .mode(Append)
+//      .options(dataFrameOptions)
+//      .save()
   }
 
   private def getDataFrameOptions(tableName: String,

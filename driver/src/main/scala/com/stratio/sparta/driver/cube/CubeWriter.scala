@@ -48,7 +48,7 @@ case class CubeWriter(cube: Cube,
       toRow(dimensionValuesTime, measuresValues)
     }.foreachRDD(rdd => {
       if (rdd.take(1).length > 0) {
-        val sqlContext = SQLContext.getOrCreate(rdd.context)
+        val sqlContext = new SQLContext(rdd.context)
         val cubeDataFrame = sqlContext.createDataFrame(rdd, tableSchema.schema)
 
         options.outputs.foreach(outputName =>

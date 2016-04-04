@@ -81,33 +81,33 @@ class ElasticSearchOutput(keyName: String,
     }
 
   override def upsert(dataFrame: DataFrame, options: Map[String, String]): Unit = {
-    val isAutoCalculatedId = dataFrame.schema.fieldNames.contains(Output.Id)
-    val tableName = getTableNameFromOptions(options)
-    val timeDimension = getTimeFromOptions(options)
-    val sparkConfig = getSparkConfig(timeDimension, idField.isDefined || isAutoCalculatedId)
-    val dataFrameSchema = dataFrame.schema
-
-    //Necessary this dataFrame transformation because ES not support java.sql.TimeStamp in the row values: use
-    // dateType in the cube writer options and set to long, date or dateTime
-    val newDataFrame = if (dataFrameSchema.fields.exists(stField => stField.dataType == TimestampType)) {
-      val rdd = dataFrame.map(row => {
-        val seqOfValues = row.toSeq.map { value =>
-          value match {
-            case value: java.sql.Timestamp => value.asInstanceOf[java.sql.Timestamp].getTime
-            case _ => value
-          }
-        }
-        Row.fromSeq(seqOfValues)
-      })
-      val newSchema = StructType(dataFrameSchema.map(structField =>
-        if (structField.dataType == TimestampType) structField.copy(dataType = LongType)
-        else structField)
-      )
-      SQLContext.getOrCreate(dataFrame.rdd.sparkContext).createDataFrame(rdd, newSchema)
-    }
-    else dataFrame
-
-    newDataFrame.saveToEs(indexNameType(tableName), sparkConfig)
+//    val isAutoCalculatedId = dataFrame.schema.fieldNames.contains(Output.Id)
+//    val tableName = getTableNameFromOptions(options)
+//    val timeDimension = getTimeFromOptions(options)
+//    val sparkConfig = getSparkConfig(timeDimension, idField.isDefined || isAutoCalculatedId)
+//    val dataFrameSchema = dataFrame.schema
+//
+//    //Necessary this dataFrame transformation because ES not support java.sql.TimeStamp in the row values: use
+//    // dateType in the cube writer options and set to long, date or dateTime
+//    val newDataFrame = if (dataFrameSchema.fields.exists(stField => stField.dataType == TimestampType)) {
+//      val rdd = dataFrame.map(row => {
+//        val seqOfValues = row.toSeq.map { value =>
+//          value match {
+//            case value: java.sql.Timestamp => value.asInstanceOf[java.sql.Timestamp].getTime
+//            case _ => value
+//          }
+//        }
+//        Row.fromSeq(seqOfValues)
+//      })
+//      val newSchema = StructType(dataFrameSchema.map(structField =>
+//        if (structField.dataType == TimestampType) structField.copy(dataType = LongType)
+//        else structField)
+//      )
+//      SQLContext.getOrCreate(dataFrame.rdd.sparkContext).createDataFrame(rdd, newSchema)
+//    }
+//    else dataFrame
+//
+//    newDataFrame.saveToEs(indexNameType(tableName), sparkConfig)
   }
 
   def indexNameType(tableName: String): String = s"${tableName.toLowerCase}/$mappingName"

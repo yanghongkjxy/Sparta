@@ -31,7 +31,7 @@ abstract class Parser(order: Integer,
 
   val outputFieldsSchema = schema.fields.filter(field => outputFields.contains(field.name))
 
-  val inputFieldIndex = Try(schema.fieldIndex(inputField)).getOrElse(0)
+  val inputFieldIndex = Try(schema.indexOf(inputField)).getOrElse(0)
 
   def parse(data: Row, removeRaw: Boolean): Row
 

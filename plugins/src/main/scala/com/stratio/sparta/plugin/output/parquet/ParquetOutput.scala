@@ -37,20 +37,20 @@ class ParquetOutput(keyName: String,
   extends Output(keyName, version, properties, schemas) with Logging {
 
   override def upsert(dataFrame: DataFrame, options: Map[String, String]): Unit = {
-    val tableName = getTableNameFromOptions(options)
-    val timeDimension = getTimeFromOptions(options)
-    val path = properties.getString("path", None)
-    require(path.isDefined, "Destination path is required. You have to set 'path' on properties")
-
-    val dataFrameWriter = dataFrame
-      .write
-      .format("parquet")
-      .mode(Append)
-
-    if (timeDimension.isDefined) {
-      dataFrameWriter.partitionBy(timeDimension.get)
-    }
-
-    dataFrameWriter.save(s"${path.get}/${versionedTableName(tableName)}")
+//    val tableName = getTableNameFromOptions(options)
+//    val timeDimension = getTimeFromOptions(options)
+//    val path = properties.getString("path", None)
+//    require(path.isDefined, "Destination path is required. You have to set 'path' on properties")
+//
+//    val dataFrameWriter = dataFrame
+//      .write
+//      .format("parquet")
+//      .mode(Append)
+//
+//    if (timeDimension.isDefined) {
+//      dataFrameWriter.partitionBy(timeDimension.get)
+//    }
+//
+//    dataFrameWriter.save(s"${path.get}/${versionedTableName(tableName)}")
   }
 }

@@ -34,17 +34,18 @@ class IngestionParser(order: Integer,
   extends Parser(order, inputField, outputFields, schema, properties) {
 
   override def parse(data: Row, removeRaw: Boolean): Row = {
-    val input = data.get(schema.fieldIndex(inputField))
-    JSON.globalNumberParser = { input: String => input.toLong }
-    val rawData = Try(input.asInstanceOf[String]).getOrElse(new String(input.asInstanceOf[Array[Byte]]))
-    val ingestionModel = JSON.parseFull(rawData).get.asInstanceOf[Map[String, Any]]
-    val columnList = ingestionModel.get("columns").get.asInstanceOf[List[Map[String, String]]]
-    val columnPairs = extractColumnPairs(columnList)
-    val (_, allParsedPairs) = parseWithSchema(columnPairs, List.empty[(String, Any)])
-    val filteredParsedPairs = allParsedPairs.filter(element => outputFields.contains(element._1))
-    val prevData = if(removeRaw) data.toSeq.drop(1) else data.toSeq
-
-    Row.fromSeq(prevData ++ filteredParsedPairs.map(_._2).toSeq)
+//    val input = data.get(schema.fieldIndex(inputField))
+//    JSON.globalNumberParser = { input: String => input.toLong }
+//    val rawData = Try(input.asInstanceOf[String]).getOrElse(new String(input.asInstanceOf[Array[Byte]]))
+//    val ingestionModel = JSON.parseFull(rawData).get.asInstanceOf[Map[String, Any]]
+//    val columnList = ingestionModel.get("columns").get.asInstanceOf[List[Map[String, String]]]
+//    val columnPairs = extractColumnPairs(columnList)
+//    val (_, allParsedPairs) = parseWithSchema(columnPairs, List.empty[(String, Any)])
+//    val filteredParsedPairs = allParsedPairs.filter(element => outputFields.contains(element._1))
+//    val prevData = if(removeRaw) data.toSeq.drop(1) else data.toSeq
+//
+//    Row.fromSeq(prevData ++ filteredParsedPairs.map(_._2).toSeq)
+    Row()
   }
 
   // XXX Private methods.

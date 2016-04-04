@@ -45,15 +45,15 @@ class GeoParser(
     Row.fromSeq(prevData ++ newData)
   }
 
-  private def getLatitude(row: Row): Option[String] =
-    Try(row.get(schema.fieldIndex(latitudeField)))
-      .toOption
-      .map(_.toString)
+  private def getLatitude(row: Row): Option[String] = None
+//    Try(row.get(schema.fieldIndex(latitudeField)))
+//      .toOption
+//      .map(_.toString)
 
-  private def getLongitude(row: Row): Option[String] =
-    Try(row.get(schema.fieldIndex(longitudeField)))
-      .toOption
-      .map(_.toString)
+  private def getLongitude(row: Row): Option[String] = None
+//    Try(row.get(schema.fieldIndex(longitudeField)))
+//      .toOption
+//      .map(_.toString)
 
   private def addGeoField(row: Row): Option[String] =
     for {

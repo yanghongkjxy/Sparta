@@ -28,18 +28,18 @@ object RawDataStorageService {
     StructType(Seq(StructField(TimeStampField, TimestampType, false), StructField(DataField, StringType)))
 
   def save(raw: DStream[Row], path: String): Unit = {
-    val eventTime = DateOperations.millisToTimeStamp(System.currentTimeMillis())
-    raw.map(row => Row.merge(Row(eventTime), row))
-      .foreachRDD(rdd => {
-        if (rdd.take(1).length > 0) {
-          SQLContext.getOrCreate(rdd.sparkContext).createDataFrame(rdd, RawSchema)
-            .write
-            .format("parquet")
-            .partitionBy(TimeStampField)
-            .mode(SaveMode.Append)
-            .save(s"$path")
-        }
-      }
-      )
+//    val eventTime = DateOperations.millisToTimeStamp(System.currentTimeMillis())
+//    raw.map(row => Row.merge(Row(eventTime), row))
+//      .foreachRDD(rdd => {
+//        if (rdd.take(1).length > 0) {
+//          SQLContext.getOrCreate(rdd.sparkContext).createDataFrame(rdd, RawSchema)
+//            .write
+//            .format("parquet")
+//            .partitionBy(TimeStampField)
+//            .mode(SaveMode.Append)
+//            .save(s"$path")
+//        }
+//      }
+//      )
   }
 }

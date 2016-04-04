@@ -43,7 +43,7 @@ case class CubeOperations(cube: Cube) extends SLF4JLogging {
     inputStream.mapPartitions(rows => rows.flatMap(row => Try {
       val dimensionValues = for {
         dimension <- cube.dimensions
-        value = row.get(cube.initSchema.fieldIndex(dimension.field))
+        value = row.get(cube.initSchema.indexOf(dimension.field))
         (precision, dimValue) = dimension.dimensionType.precisionValue(dimension.precisionKey, value)
       } yield DimensionValue(dimension, TypeOp.transformValueByTypeOp(precision.typeOp, dimValue))
 

@@ -22,11 +22,11 @@ import org.kitesdk.morphline.api.{Command, Record}
 
 class EventCollector(outputFieldsSchema: Array[StructField]) extends Command {
 
-  @volatile var row: Row = Row.empty
+  @volatile var row: Row = Row()
 
   override def notify(p1: Record): Unit = {}
 
-  def reset(): Unit = row = Row.empty
+  def reset(): Unit = row = Row()
 
   //scalastyle:off
   override def getParent: Command = null
@@ -46,7 +46,7 @@ class EventCollector(outputFieldsSchema: Array[StructField]) extends Command {
           ).toList)
           true
         case None =>
-          row = Row.empty
+          row = Row()
           false
       }
   }

@@ -39,7 +39,7 @@ object SparkContextFactory extends SLF4JLogging {
     synchronized {
       sqlContext match {
         case Some(_) => sqlContext
-        case None => if (sc.isDefined) sqlContext = Some(SQLContext.getOrCreate(sc.get))
+        case None => if (sc.isDefined) sqlContext = Some(new SQLContext(sc.get))
       }
     }
     sqlContext
@@ -82,14 +82,14 @@ object SparkContextFactory extends SLF4JLogging {
   private def instantiateStandAloneContext(generalConfig: Option[Config],
                                            specificConfig: Map[String, String],
                                            jars: Seq[File]): SparkContext = {
-    sc = Some(SparkContext.getOrCreate(configToSparkConf(generalConfig, specificConfig)))
+    sc = Some(new SparkContext(configToSparkConf(generalConfig, specificConfig)))
     jars.foreach(f => sc.get.addJar(f.getAbsolutePath))
     sc.get
   }
 
   private def instantiateClusterContext(specificConfig: Map[String, String],
                                         jars: Seq[String]): SparkContext = {
-    sc = Some(SparkContext.getOrCreate(configToSparkConf(None, specificConfig)))
+    sc = Some(new SparkContext(configToSparkConf(None, specificConfig)))
     jars.foreach(f => sc.get.addJar(f))
     sc.get
   }

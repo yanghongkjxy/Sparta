@@ -45,9 +45,9 @@ class JdbcOutput(keyName: String,
   }
 
   override def upsert(dataFrame: DataFrame, options: Map[String, String]): Unit = {
-    val tableName = getTableNameFromOptions(options)
-    dataFrame.write
-      .mode(Append)
-      .jdbc(url, tableName, connectionProperties)
+//    val tableName = getTableNameFromOptions(options)
+//    dataFrame.write
+//      .mode(Append)
+//      .jdbc(url, tableName, connectionProperties)
   }
 }

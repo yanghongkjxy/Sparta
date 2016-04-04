@@ -82,10 +82,10 @@ class CassandraOutput(keyName: String,
   }
 
   def write(dataFrame: DataFrame, tableNameVersioned: String): Unit = {
-    dataFrame.write
-      .format("org.apache.spark.sql.cassandra")
-      .mode(Append)
-      .options(Map("table" -> tableNameVersioned, "keyspace" -> keyspace, "cluster" -> cluster)).save()
+//    dataFrame.write
+//      .format("org.apache.spark.sql.cassandra")
+//      .mode(Append)
+//      .options(Map("table" -> tableNameVersioned, "keyspace" -> keyspace, "cluster" -> cluster)).save()
   }
 
   def getCassandraConnector: CassandraConnector = {

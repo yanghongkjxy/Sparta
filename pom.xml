@@ -590,23 +590,32 @@
                 </pluginManagement>
             </build>
         </profile>
+        <!--<profile>-->
+            <!--<id>spark-1.4</id>-->
+            <!--<properties>-->
+                <!--<spark.version>1.4.1</spark.version>-->
+                <!--<spark.version.folder>1.4</spark.version.folder>-->
+                <!--<mongodb.spark.version>0.9.2</mongodb.spark.version>-->
+                <!--<elastic.spark.version>2.1.2</elastic.spark.version>-->
+            <!--</properties>-->
+        <!--</profile>-->
+        <!--<profile>-->
+            <!--<id>spark-1.5</id>-->
+            <!--<properties>-->
+                <!--<spark.version.folder>1.5</spark.version.folder>-->
+                <!--<spark.version>1.5.2</spark.version>-->
+                <!--<mongodb.spark.version>0.10.1</mongodb.spark.version>-->
+                <!--<elastic.spark.version>2.2.0-beta1</elastic.spark.version>-->
+            <!--</properties>-->
+        <!--</profile>-->
         <profile>
-            <id>spark-1.4</id>
-            <properties>
-                <spark.version>1.4.1</spark.version>
-                <spark.version.folder>1.4</spark.version.folder>
-                <mongodb.spark.version>0.9.2</mongodb.spark.version>
-                <elastic.spark.version>2.1.2</elastic.spark.version>
-            </properties>
-        </profile>
-        <profile>
-            <id>spark-1.5</id>
+            <id>cdh-5.4.2</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <spark.version.folder>1.5</spark.version.folder>
-                <spark.version>1.5.2</spark.version>
+                <spark.version.folder>cdh5.4.2</spark.version.folder>
+                <spark.version>1.3.0-cdh5.4.2</spark.version>
                 <mongodb.spark.version>0.10.1</mongodb.spark.version>
                 <elastic.spark.version>2.2.0-beta1</elastic.spark.version>
             </properties>
@@ -618,6 +627,10 @@
             <id>sodio</id>
             <name>sodio</name>
             <url>http://sodio.stratio.com/nexus/content/groups/public</url>
+        </repository>
+        <repository>
+            <id>cloudera</id>
+            <url>https://repository.cloudera.com/artifactory/cloudera-repos/</url>
         </repository>
     </repositories>
 </project>
