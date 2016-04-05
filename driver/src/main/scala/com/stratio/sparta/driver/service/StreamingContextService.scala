@@ -22,10 +22,6 @@ import scala.concurrent.duration._
 import scala.util.Success
 import scala.util.Try
 
-import akka.actor.ActorRef
-import akka.event.slf4j.SLF4JLogging
-import akka.pattern.ask
-import akka.util.Timeout
 import com.typesafe.config.Config
 import org.apache.curator.framework.recipes.cache.NodeCache
 import org.apache.spark.SparkContext
@@ -41,17 +37,18 @@ import com.stratio.sparta.serving.core.policy.status.PolicyStatusActor.Kill
 import com.stratio.sparta.serving.core.policy.status.PolicyStatusActor.Update
 import com.stratio.sparta.serving.core.policy.status.PolicyStatusEnum
 
-case class StreamingContextService(policyStatusActor: Option[ActorRef] = None, generalConfig: Option[Config] = None)
-  extends SLF4JLogging {
+case class StreamingContextService(policyStatusActor: Option[_] = None, generalConfig: Option[Config] = None)
+//  extends SLF4JLogging
+{
 
-  implicit val timeout: Timeout = Timeout(3.seconds)
+//  implicit val timeout: Timeout = Timeout(3.seconds)
   final val OutputsSparkConfiguration = "getSparkConfiguration"
 
   def standAloneStreamingContext(apConfig: AggregationPoliciesModel, files: Seq[File]): Option[StreamingContext] = {
     runStatusListener(apConfig.id.get, apConfig.name)
 
     val ssc = StreamingContext.getOrCreate(AggregationPoliciesModel.checkpointPath(apConfig), () => {
-      log.info(s"Nothing in checkpoint path: ${AggregationPoliciesModel.checkpointPath(apConfig)}")
+//      log.info(s"Nothing in checkpoint path: ${AggregationPoliciesModel.checkpointPath(apConfig)}")
       SpartaJob(apConfig).run(getStandAloneSparkContext(apConfig, files))
     })
 
@@ -68,7 +65,7 @@ case class StreamingContextService(policyStatusActor: Option[ActorRef] = None, g
     runStatusListener(apConfig.id.get, apConfig.name, exitWhenStop)
 
     val ssc = StreamingContext.getOrCreate(AggregationPoliciesModel.checkpointPath(apConfig), () => {
-      log.info(s"Nothing in checkpoint path: ${AggregationPoliciesModel.checkpointPath(apConfig)}")
+//      log.info(s"Nothing in checkpoint path: ${AggregationPoliciesModel.checkpointPath(apConfig)}")
       SpartaJob(apConfig).run(getClusterSparkContext(apConfig, files, detailConfig))
     })
 
@@ -96,38 +93,38 @@ case class StreamingContextService(policyStatusActor: Option[ActorRef] = None, g
   }
 
   private def runStatusListener(policyId: String, name: String, exit: Boolean = false): Unit = {
-    if (policyStatusActor.isDefined) {
-      log.info(s"Listener added for: $policyId")
-      policyStatusActor.get ? AddListener(policyId, (policyStatus: PolicyStatusModel, nodeCache: NodeCache) => {
-        synchronized {
-          if (policyStatus.status.id equals PolicyStatusEnum.Stopping.id) {
-            try {
-
-              log.info("Stopping message received from Zookeeper")
-              SparkContextFactory.destroySparkStreamingContext()
-
-            } finally {
-
-              Try(Await.result(policyStatusActor.get ? Kill(name), timeout.duration) match {
-                case false => log.warn(s"The actor with name: $name has been stopped previously")
-              }).getOrElse(log.warn(s"The actor with name: $name could not be stopped correctly"))
-
-              Try(Await.result(policyStatusActor.get ? Update(PolicyStatusModel(policyId, PolicyStatusEnum.Stopped)),
-                timeout.duration) match {
-                case None => log.warn(s"The policy status can not be changed")
-              }).getOrElse(log.warn(s"The policy status could be wrong"))
-
-              Try(nodeCache.close()).getOrElse(log.warn(s"The nodeCache in Zookeeper is not closed correctly"))
-
-              if (exit) {
-                SparkContextFactory.destroySparkContext()
-                log.info("Closing the application")
-                System.exit(0)
-              }
-            }
-          }
-        }
-      })
-    }
+//    if (policyStatusActor.isDefined) {
+//      log.info(s"Listener added for: $policyId")
+//      policyStatusActor.get ? AddListener(policyId, (policyStatus: PolicyStatusModel, nodeCache: NodeCache) => {
+//        synchronized {
+//          if (policyStatus.status.id equals PolicyStatusEnum.Stopping.id) {
+//            try {
+//
+//              log.info("Stopping message received from Zookeeper")
+//              SparkContextFactory.destroySparkStreamingContext()
+//
+//            } finally {
+//
+//              Try(Await.result(policyStatusActor.get ? Kill(name), timeout.duration) match {
+//                case false => log.warn(s"The actor with name: $name has been stopped previously")
+//              }).getOrElse(log.warn(s"The actor with name: $name could not be stopped correctly"))
+//
+//              Try(Await.result(policyStatusActor.get ? Update(PolicyStatusModel(policyId, PolicyStatusEnum.Stopped)),
+//                timeout.duration) match {
+//                case None => log.warn(s"The policy status can not be changed")
+//              }).getOrElse(log.warn(s"The policy status could be wrong"))
+//
+//              Try(nodeCache.close()).getOrElse(log.warn(s"The nodeCache in Zookeeper is not closed correctly"))
+//
+//              if (exit) {
+//                SparkContextFactory.destroySparkContext()
+//                log.info("Closing the application")
+//                System.exit(0)
+//              }
+//            }
+//          }
+//        }
+//      })
+//    }
   }
 }

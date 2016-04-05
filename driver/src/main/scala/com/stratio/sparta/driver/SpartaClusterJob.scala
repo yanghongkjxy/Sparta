@@ -15,9 +15,9 @@
  */
 package com.stratio.sparta.driver
 
-import akka.actor.{ActorSystem, Props}
-import akka.pattern.ask
-import akka.util.Timeout
+//import akka.actor.{ActorSystem, Props}
+//import akka.pattern.ask
+//import akka.util.Timeout
 import com.google.common.io.BaseEncoding
 import com.stratio.sparta.driver.SpartaJob._
 import com.stratio.sparta.driver.service.StreamingContextService
@@ -38,7 +38,7 @@ import scala.util.{Failure, Success, Try}
 
 object SpartaClusterJob extends SpartaSerializer {
 
-  implicit val timeout: Timeout = Timeout(3.seconds)
+//  implicit val timeout: Timeout = Timeout(3.seconds)
   final val PolicyIdIndex = 0
   final val ZookeperConfigurationIndex = 1
   final val DetailConfigurationIndex = 2
@@ -57,35 +57,35 @@ object SpartaClusterJob extends SpartaSerializer {
 
       val curatorFramework = CuratorFactoryHolder.getInstance()
       val policyZk = getPolicyFromZookeeper(policyId, curatorFramework)
-      implicit val system = ActorSystem(policyId)
-      val fragmentActor = system.actorOf(Props(new FragmentActor(curatorFramework)), AkkaConstant.FragmentActor)
-      val policy = PolicyHelper.parseFragments(
-        PolicyHelper.fillFragments(policyZk, fragmentActor, timeout))
-      val policyStatusActor = system.actorOf(Props(new PolicyStatusActor(curatorFramework)),
-        AkkaConstant.PolicyStatusActor)
+//      implicit val system = ActorSystem(policyId)
+//      val fragmentActor = system.actorOf(Props(new FragmentActor(curatorFramework)), AkkaConstant.FragmentActor)
+//      val policy = PolicyHelper.parseFragments(
+//        PolicyHelper.fillFragments(policyZk, fragmentActor, timeout))
+//      val policyStatusActor = system.actorOf(Props(new PolicyStatusActor(curatorFramework)),
+//        AkkaConstant.PolicyStatusActor)
 
       Try {
-        policyStatusActor ? Update(PolicyStatusModel(policyId, PolicyStatusEnum.Starting))
-        Try(ErrorDAO().dao.delete(policy.id.get))
-
-        val streamingContextService = new StreamingContextService(Some(policyStatusActor))
+//        policyStatusActor ? Update(PolicyStatusModel(policyId, PolicyStatusEnum.Starting))
+//        Try(ErrorDAO().dao.delete(policy.id.get))
+//
+        val streamingContextService = new StreamingContextService(None)
         val ssc = streamingContextService.clusterStreamingContext(
-          policy,
+          policyZk,
           pluginsFiles,
-          Map("spark.app.name" -> s"${policy.name}")
+          Map("spark.app.name" -> s"${policyZk.name}")
         ).get
 
         ssc.start
-        policyStatusActor ? Update(PolicyStatusModel(policyId, PolicyStatusEnum.Started))
+//        policyStatusActor ? Update(PolicyStatusModel(policyId, PolicyStatusEnum.Started))
         log.info(s"Starting Streaming Context for policy $policyId")
         ssc.awaitTermination()
       } match {
         case Success(_) =>
-          policyStatusActor ? Update(PolicyStatusModel(policyId, PolicyStatusEnum.Stopped))
+//          policyStatusActor ? Update(PolicyStatusModel(policyId, PolicyStatusEnum.Stopped))
           log.info(s"Stopped Streaming Context for policy $policyId")
         case Failure(exception) =>
           log.error(exception.getLocalizedMessage, exception)
-          policyStatusActor ? Update(PolicyStatusModel(policyId, PolicyStatusEnum.Failed))
+//          policyStatusActor ? Update(PolicyStatusModel(policyId, PolicyStatusEnum.Failed))
       }
     } match {
       case Success(_) => log.info("Streaming context is running")

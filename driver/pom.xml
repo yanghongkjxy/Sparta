@@ -39,6 +39,27 @@
             <artifactId>serving-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.spark-project.akka</groupId>
+            <artifactId>akka-actor_2.10</artifactId>
+            <version>2.2.3-shaded-protobuf</version>
+        </dependency>
+        <dependency>
+            <groupId>org.spark-project.akka</groupId>
+            <artifactId>akka-remote_2.10</artifactId>
+            <version>2.2.3-shaded-protobuf</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.spark-project.akka</groupId>
+            <artifactId>akka-slf4j_2.10</artifactId>
+            <version>2.2.3-shaded-protobuf</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-common</artifactId>
+            <version>2.6.0-cdh5.6.0</version>
+        </dependency>
+        <dependency>
             <groupId>com.github.fge</groupId>
             <artifactId>json-schema-validator</artifactId>
             <exclusions>
@@ -132,7 +153,7 @@
                     </artifactSet>
                     <transformers>
                         <transformer
-                            implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                             <mainClass>com.stratio.sparta.driver.SpartaClusterJob</mainClass>
                         </transformer>
                         <transformer
