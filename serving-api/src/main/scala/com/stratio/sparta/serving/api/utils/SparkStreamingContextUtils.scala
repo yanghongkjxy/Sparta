@@ -112,6 +112,7 @@ trait SparkStreamingContextUtils extends PolicyStatusUtils
                          policyStatusActor: ActorRef,
                          context: ActorContext,
                          actorName: String): Option[ActorRef] = {
-    Some(context.actorOf(Props(new ClusterLauncherActor(policy, policyStatusActor)), actorName))
+//    Some(context.actorOf(Props(new ClusterLauncherActor(policy, policyStatusActor)), actorName))
+    None
   }
 }

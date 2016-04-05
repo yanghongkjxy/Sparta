@@ -92,6 +92,8 @@ class SpartaJob(policy: AggregationPoliciesModel) extends SLF4JLogging {
         cubesTriggersOutputs
       ).write(aggregatedData)
     }
+    ssc.get.start()
+    ssc.get.awaitTermination()
     ssc.get
   }
 }
@@ -381,6 +383,8 @@ object SpartaJob extends SLF4JLogging with SpartaSerializer {
     ex.getCause match {
       case cause: ClassNotFoundException =>
         log.error("The component couldn't be found in classpath. Please check the type.")
+      case e: Exception =>
+        log.error("Unknown issue", e)
     }
     saveErrorZK(policyId, code)
     new IllegalArgumentException(message, ex)

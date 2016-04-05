@@ -38,8 +38,8 @@ import scala.io.Source
 import scala.language.postfixOps
 import scala.util.{Failure, Properties, Success, Try}
 
-class ClusterLauncherActor(policy: AggregationPoliciesModel, policyStatusActor: ActorRef) extends Actor
-with SLF4JLogging
+class ClusterLauncherActor(policy: AggregationPoliciesModel, policyStatusActor: ActorRef)
+extends SLF4JLogging
 with SpartaSerializer {
 
   private val SpartaDriver = "com.stratio.sparta.driver.SpartaClusterJob"
@@ -60,7 +60,7 @@ with SpartaSerializer {
 
   implicit val timeout: Timeout = Timeout(3.seconds)
 
-  override def receive: PartialFunction[Any, Unit] = {
+   def receive: PartialFunction[Any, Unit] = {
     case Start => doInitSpartaContext()
   }
 

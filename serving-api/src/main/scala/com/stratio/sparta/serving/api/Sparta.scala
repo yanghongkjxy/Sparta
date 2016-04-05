@@ -15,21 +15,50 @@
  */
 package com.stratio.sparta.serving.api
 
+import java.util.UUID
+
 import akka.event.slf4j.SLF4JLogging
+import org.json4s.jackson.Serialization._
+import com.stratio.sparta.driver.SpartaJob
+import com.stratio.sparta.driver.factory.SparkContextFactory
+import com.stratio.sparta.serving.api.actor.ClusterLauncherActor
+import com.stratio.sparta.serving.api.constants.ActorsConstant
 import com.stratio.sparta.serving.api.helpers.SpartaHelper
-import com.stratio.sparta.serving.core.SpartaConfig
+import com.stratio.sparta.serving.core.{CuratorFactoryHolder, SpartaConfig}
 import com.stratio.sparta.serving.core.constants.AppConstant
+import com.stratio.sparta.serving.core.models.{SpartaSerializer, AggregationPoliciesModel}
+import org.apache.spark.{SparkContext, SparkConf}
+import org.json4s.native.Serialization.{read, write}
 
 /**
  * Entry point of the application.
  */
-object Sparta extends App with SLF4JLogging {
+object Sparta extends App with SLF4JLogging with SpartaSerializer {
+
+//  val string = scala.io.Source.fromFile("/home/anistal/Downloads/websocket-to-mongo.json").mkString
 
   SpartaConfig.initMainConfig()
-  SpartaConfig.initDAOs
   SpartaConfig.initApiConfig()
-  SpartaConfig.initSprayConfig()
-  SpartaConfig.initSwaggerConfig()
-  SpartaHelper.initAkkaSystem(AppConstant.ConfigAppName)
-  SpartaHelper.initPolicyContextStatus
+
+  val string = scala.io.Source.fromFile("/tmp/policy.json").mkString
+  val conf = new SparkConf().setAppName("Simple Application").setMaster("local[*]")
+//  val sc = new SparkContext(conf)
+
+  val policy = read[AggregationPoliciesModel](string)
+  val spartaJob = new SpartaJob(policy)
+
+//  SparkContextFactory.setSparkContext(sc)
+//
+//  spartaJob.run(sc)
+
+  val policyS = policy.copy(id = Some(s"${UUID.randomUUID.toString}"),
+    name = policy.name.toLowerCase,
+    version = Some(ActorsConstant.UnitVersion))
+
+  val curatorFramework = CuratorFactoryHolder.getInstance()
+  curatorFramework.create().creatingParentsIfNeeded().forPath(
+    s"${AppConstant.PoliciesBasePath}/${policyS.id.get}", write(policyS).getBytes)
+
+  //scalastyle:off
+  new ClusterLauncherActor(policyS, null).doInitSpartaContext()
 }
