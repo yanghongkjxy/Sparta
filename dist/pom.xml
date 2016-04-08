@@ -25,6 +25,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>stratio-sparta</artifactId>
+    <packaging>pom</packaging>
     <properties>
         <classpath.directory>lib</classpath.directory>
         <config.directory>src/main/resources</config.directory>
@@ -242,42 +243,42 @@
                             </assembly>
                         </configuration>
                         <executions>
-                            <execution>
-                                <id>deb</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>package-deb</goal>
-                                </goals>
-                                <configuration>
-                                    <architecture>all</architecture>
-                                    <assembly>
-                                        <copyFile>
-                                            <path>src/main/unix/files_and_dirs/etc/default/sparta-functions</path>
-                                            <toFile>/etc/default/sparta-functions</toFile>
-                                            <attributes>
-                                                <user>sparta</user>
-                                                <group>stratio</group>
-                                            </attributes>
-                                        </copyFile>
-                                        <copyFile>
-                                            <path>src/main/unix/files_and_dirs/etc/default/sparta-variables</path>
-                                            <toFile>/etc/default/sparta-variables</toFile>
-                                            <attributes>
-                                                <user>sparta</user>
-                                                <group>stratio</group>
-                                            </attributes>
-                                        </copyFile>
-                                        <copyFile>
-                                            <path>src/main/unix/files_and_dirs/etc/init.d/sparta-deb.sh</path>
-                                            <toFile>/etc/init.d/sparta</toFile>
-                                            <attributes>
-                                                <user>root</user>
-                                                <group>root</group>
-                                            </attributes>
-                                        </copyFile>
-                                    </assembly>
-                                </configuration>
-                            </execution>
+                            <!--<execution>-->
+                                <!--<id>deb</id>-->
+                                <!--<phase>package</phase>-->
+                                <!--<goals>-->
+                                    <!--<goal>package-deb</goal>-->
+                                <!--</goals>-->
+                                <!--<configuration>-->
+                                    <!--<architecture>all</architecture>-->
+                                    <!--<assembly>-->
+                                        <!--<copyFile>-->
+                                            <!--<path>src/main/unix/files_and_dirs/etc/default/sparta-functions</path>-->
+                                            <!--<toFile>/etc/default/sparta-functions</toFile>-->
+                                            <!--<attributes>-->
+                                                <!--<user>sparta</user>-->
+                                                <!--<group>stratio</group>-->
+                                            <!--</attributes>-->
+                                        <!--</copyFile>-->
+                                        <!--<copyFile>-->
+                                            <!--<path>src/main/unix/files_and_dirs/etc/default/sparta-variables</path>-->
+                                            <!--<toFile>/etc/default/sparta-variables</toFile>-->
+                                            <!--<attributes>-->
+                                                <!--<user>sparta</user>-->
+                                                <!--<group>stratio</group>-->
+                                            <!--</attributes>-->
+                                        <!--</copyFile>-->
+                                        <!--<copyFile>-->
+                                            <!--<path>src/main/unix/files_and_dirs/etc/init.d/sparta-deb.sh</path>-->
+                                            <!--<toFile>/etc/init.d/sparta</toFile>-->
+                                            <!--<attributes>-->
+                                                <!--<user>root</user>-->
+                                                <!--<group>root</group>-->
+                                            <!--</attributes>-->
+                                        <!--</copyFile>-->
+                                    <!--</assembly>-->
+                                <!--</configuration>-->
+                            <!--</execution>-->
                             <execution>
                                 <id>rpm</id>
                                 <phase>package</phase>

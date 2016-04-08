@@ -19,6 +19,7 @@ import akka.actor.{Actor, ActorRef}
 import akka.event.slf4j.SLF4JLogging
 import akka.pattern.ask
 import akka.util.Timeout
+import org.apache.spark.streaming.StreamingContext
 import com.stratio.sparta.driver.factory.SparkContextFactory
 import com.stratio.sparta.driver.service.StreamingContextService
 import com.stratio.sparta.driver.util.PolicyUtils
@@ -28,7 +29,6 @@ import com.stratio.sparta.serving.core.helpers.JarsHelper
 import com.stratio.sparta.serving.core.models.{AggregationPoliciesModel, PolicyStatusModel, SpartaSerializer}
 import com.stratio.sparta.serving.core.policy.status.PolicyStatusActor.Update
 import com.stratio.sparta.serving.core.policy.status.PolicyStatusEnum
-import org.apache.spark.streaming.StreamingContext
 
 import scala.concurrent.duration._
 import scala.util.{Failure, Success, Try}

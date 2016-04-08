@@ -140,7 +140,7 @@ with SpartaSerializer {
   private def sparkLauncherStreams(exitCode: Boolean, sparkProcess: Process): Unit = {
 
     def recursiveErrors(it: Iterator[String], count : Int): Unit = {
-      log.info(it.next())
+      log.error(it.next())
       if(it.hasNext && count < 50){
         recursiveErrors(it, count + 1)
       }

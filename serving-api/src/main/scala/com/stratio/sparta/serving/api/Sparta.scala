@@ -18,6 +18,7 @@ package com.stratio.sparta.serving.api
 import java.util.UUID
 
 import akka.event.slf4j.SLF4JLogging
+import org.apache.log4j.BasicConfigurator
 import org.json4s.jackson.Serialization._
 import com.stratio.sparta.driver.SpartaJob
 import com.stratio.sparta.driver.factory.SparkContextFactory
@@ -35,25 +36,30 @@ import org.json4s.native.Serialization.{read, write}
  */
 object Sparta extends App with SLF4JLogging with SpartaSerializer {
 
+  BasicConfigurator.configure();
 //  val string = scala.io.Source.fromFile("/home/anistal/Downloads/websocket-to-mongo.json").mkString
 
   SpartaConfig.initMainConfig()
   SpartaConfig.initApiConfig()
 
   val string = scala.io.Source.fromFile("/tmp/policy.json").mkString
-  val conf = new SparkConf().setAppName("Simple Application").setMaster("local[*]")
-//  val sc = new SparkContext(conf)
-
   val policy = read[AggregationPoliciesModel](string)
-  val spartaJob = new SpartaJob(policy)
 
+  // In local
+//  val conf = new SparkConf().setAppName("Simple Application").setMaster("local[*]")
+//  val sc = new SparkContext(conf)
 //  SparkContextFactory.setSparkContext(sc)
-//
+//  val spartaJob = new SpartaJob(policy)
 //  spartaJob.run(sc)
 
-  val policyS = policy.copy(id = Some(s"${UUID.randomUUID.toString}"),
-    name = policy.name.toLowerCase,
-    version = Some(ActorsConstant.UnitVersion))
+  //  In cluster
+  val policyS = if (policy.id == None) {
+    policy.copy(id = Some(s"${UUID.randomUUID.toString}"),
+      name = policy.name.toLowerCase,
+      version = Some(ActorsConstant.UnitVersion))
+  } else {
+    policy
+  }
 
   val curatorFramework = CuratorFactoryHolder.getInstance()
   curatorFramework.create().creatingParentsIfNeeded().forPath(
@@ -61,4 +67,7 @@ object Sparta extends App with SLF4JLogging with SpartaSerializer {
 
   //scalastyle:off
   new ClusterLauncherActor(policyS, null).doInitSpartaContext()
+
+  log.info("Waiting 120 seconds after submitting the job...")
+  Thread.sleep(120 * 1000)
 }

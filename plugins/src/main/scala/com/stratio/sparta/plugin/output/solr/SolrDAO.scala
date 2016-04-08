@@ -23,8 +23,8 @@ import javax.xml.transform.stream.StreamResult
 import javax.xml.transform.{OutputKeys, TransformerFactory}
 
 import org.apache.commons.io.FileUtils
-import org.apache.solr.client.solrj.SolrClient
-import org.apache.solr.client.solrj.impl.{CloudSolrClient, HttpSolrClient}
+import org.apache.solr.client.solrj.SolrServer
+import org.apache.solr.client.solrj.impl.{HttpSolrServer, CloudSolrServer}
 import org.apache.solr.client.solrj.request.CoreAdminRequest
 import org.apache.solr.client.solrj.request.CoreAdminRequest.Create
 import org.apache.solr.common.params.CoreAdminParams
@@ -56,7 +56,7 @@ trait SolrDAO extends Closeable with Logging {
   def getConfig(host: String, collection: String): Map[String, String] =
     Map("zkhost" -> host, "collection" -> collection, "skip_default_index" -> "true")
 
-  def createCoreAccordingToSchema(solrClients: Map[String, SolrClient],
+  def createCoreAccordingToSchema(solrClients: Map[String, SolrServer],
                                   tableName: String,
                                   schema: StructType): Unit = {
 
@@ -77,7 +77,7 @@ trait SolrDAO extends Closeable with Logging {
     if (isCloud) {
       createCore.setDataDir(dataPath)
       createCore.setInstanceDir(s"${dataDir.get}/$core")
-      solrClient.asInstanceOf[CloudSolrClient].uploadConfig(Paths.get(tempConfPath), core)
+//      solrClient.asInstanceOf[CloudSolrServer].uploadConfig(Paths.get(tempConfPath), core)
     } else if (dataDir.isDefined) {
       val localConfPath = s"${dataDir.get}/$core/conf"
       createDir(dataPath)
@@ -147,11 +147,11 @@ trait SolrDAO extends Closeable with Logging {
 
   override def close(): Unit = {}
 
-  def getSolrServer(zkHost: String, isCloud: Boolean): SolrClient = {
+  def getSolrServer(zkHost: String, isCloud: Boolean): SolrServer = {
     if (isCloud)
-      new CloudSolrClient(zkHost)
+      new CloudSolrServer(zkHost)
     else
-      new HttpSolrClient("http://" + zkHost + "/solr")
+      new HttpSolrServer("http://" + zkHost + "/solr")
   }
 
   def getCoreList(zkHost: String, isCloud: Boolean): Seq[String] = {

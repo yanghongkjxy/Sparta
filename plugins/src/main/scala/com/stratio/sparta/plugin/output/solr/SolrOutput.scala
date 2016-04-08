@@ -16,19 +16,16 @@
 package com.stratio.sparta.plugin.output.solr
 
 import java.io.{Serializable => JSerializable}
-import com.stratio.sparta.sdk.Output._
-
 import scala.util.Try
 
-import com.lucidworks.spark.SolrRelation
-import org.apache.solr.client.solrj.SolrClient
-import org.apache.spark.sql.{SQLContext, DataFrame}
-import org.apache.spark.streaming.dstream.DStream
+import org.apache.solr.client.solrj.SolrServer
+import org.apache.spark.sql._
 
-import com.stratio.sparta.sdk.TypeOp._
-import com.stratio.sparta.sdk.ValidatingPropertyMap._
-import com.stratio.sparta.sdk.WriteOp.WriteOp
+import com.stratio.sparta.sdk.Output._
 import com.stratio.sparta.sdk._
+
+//import scala.collection._
+import com.stratio.sparta.sdk.ValidatingPropertyMap._
 
 class SolrOutput(keyName: String,
                  version: Option[Int],
@@ -49,7 +46,7 @@ class SolrOutput(keyName: String,
   override val tokenizedFields = Try(properties.getString("tokenizedFields").toBoolean).getOrElse(false)
 
   @transient
-  private val solrClients: Map[String, SolrClient] = {
+  private val solrClients: Map[String, SolrServer] = {
     schemas.map(tschemaFiltered =>
       tschemaFiltered.tableName -> getSolrServer(connection, isCloud)).toMap
   }
@@ -67,10 +64,12 @@ class SolrOutput(keyName: String,
     })
   }
 
+  //scalastyle:off
   override def upsert(dataFrame: DataFrame, options: Map[String, String]): Unit = {
     val tableName = getTableNameFromOptions(options)
-    val slrRelation = new SolrRelation(dataFrame.sqlContext, getConfig(connection, tableName), dataFrame)
-
-    slrRelation.insert(dataFrame, true)
+    val overwrite = true
+    val skipDefaultIndex = true
+    SolrOutputWriter.insert(dataFrame, overwrite, connection, skipDefaultIndex, tableName)
   }
+
 }

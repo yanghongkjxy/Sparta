@@ -23,6 +23,7 @@ import akka.event.slf4j.SLF4JLogging
 import akka.pattern.ask
 import akka.util.Timeout
 import com.google.common.io.BaseEncoding
+import org.apache.spark.launcher.SparkLauncher
 import com.stratio.sparta.driver.util.{ClusterSparkFiles, HdfsUtils}
 import com.stratio.sparta.serving.api.actor.SparkStreamingContextActor._
 import com.stratio.sparta.serving.core.SpartaConfig
@@ -31,7 +32,6 @@ import com.stratio.sparta.serving.core.models.{AggregationPoliciesModel, PolicyS
 import com.stratio.sparta.serving.core.policy.status.PolicyStatusActor.Update
 import com.stratio.sparta.serving.core.policy.status.PolicyStatusEnum
 import com.typesafe.config.{Config, ConfigRenderOptions}
-import org.apache.spark.launcher.SparkLauncher
 
 import scala.collection.JavaConversions._
 import scala.concurrent.ExecutionContext.Implicits.global
