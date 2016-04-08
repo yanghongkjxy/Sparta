@@ -36,8 +36,7 @@ import org.json4s.native.Serialization.{read, write}
  */
 object Sparta extends App with SLF4JLogging with SpartaSerializer {
 
-  BasicConfigurator.configure();
-//  val string = scala.io.Source.fromFile("/home/anistal/Downloads/websocket-to-mongo.json").mkString
+  BasicConfigurator.configure()
 
   SpartaConfig.initMainConfig()
   SpartaConfig.initApiConfig()
@@ -45,14 +44,6 @@ object Sparta extends App with SLF4JLogging with SpartaSerializer {
   val string = scala.io.Source.fromFile("/tmp/policy.json").mkString
   val policy = read[AggregationPoliciesModel](string)
 
-  // In local
-//  val conf = new SparkConf().setAppName("Simple Application").setMaster("local[*]")
-//  val sc = new SparkContext(conf)
-//  SparkContextFactory.setSparkContext(sc)
-//  val spartaJob = new SpartaJob(policy)
-//  spartaJob.run(sc)
-
-  //  In cluster
   val policyS = if (policy.id == None) {
     policy.copy(id = Some(s"${UUID.randomUUID.toString}"),
       name = policy.name.toLowerCase,
@@ -61,13 +52,23 @@ object Sparta extends App with SLF4JLogging with SpartaSerializer {
     policy
   }
 
-  val curatorFramework = CuratorFactoryHolder.getInstance()
-  curatorFramework.create().creatingParentsIfNeeded().forPath(
-    s"${AppConstant.PoliciesBasePath}/${policyS.id.get}", write(policyS).getBytes)
+  val executionMode = SpartaConfig.getDetailConfig.get.getString(AppConstant.ExecutionMode)
+  if (executionMode.isEmpty || executionMode != "local") {
+    val curatorFramework = CuratorFactoryHolder.getInstance()
+    curatorFramework.create().creatingParentsIfNeeded().forPath(
+      s"${AppConstant.PoliciesBasePath}/${policyS.id.get}", write(policyS).getBytes)
 
-  //scalastyle:off
-  new ClusterLauncherActor(policyS, null).doInitSpartaContext()
+    //scalastyle:off
+    new ClusterLauncherActor(policyS, null).doInitSpartaContext()
+    //scalastyle:on
 
-  log.info("Waiting 120 seconds after submitting the job...")
-  Thread.sleep(120 * 1000)
+    log.info("Waiting 120 seconds after submitting the job...")
+    Thread.sleep(120 * 1000)
+  } else {
+      val conf = new SparkConf().setAppName("Simple Application").setMaster("local[*]")
+      val sc = new SparkContext(conf)
+      SparkContextFactory.setSparkContext(sc)
+      val spartaJob = new SpartaJob(policyS)
+      spartaJob.run(sc)
+  }
 }

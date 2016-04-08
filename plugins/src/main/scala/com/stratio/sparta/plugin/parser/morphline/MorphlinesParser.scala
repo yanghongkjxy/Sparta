@@ -15,8 +15,12 @@
  */
 package com.stratio.sparta.plugin.parser.morphline
 
+import org.apache.spark.sql.types.{StructField, StructType}
+import org.kitesdk.morphline.api.Record
 import java.io.{ByteArrayInputStream, Serializable => JSerializable}
 import java.util.concurrent.ConcurrentHashMap
+
+import scala.util._
 
 import com.stratio.sparta.sdk.Parser
 import com.stratio.sparta.sdk.ValidatingPropertyMap._
@@ -24,6 +28,8 @@ import com.typesafe.config.ConfigFactory
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.types.{StructField, StructType}
 import org.kitesdk.morphline.api.Record
+
+import scala.collection.JavaConverters._
 
 import scala.collection.JavaConverters._
 
@@ -49,8 +55,21 @@ class MorphlinesParser(order: Integer,
     val morphlineResult = MorphlinesParser(order, config, outputFieldsSchema).process(record)
     val prevData = if (removeRaw) Row.fromSeq(row.toSeq.drop(1)) else row
 
-    Row.merge(prevData, morphlineResult)
-  }
+    //    Row.merge(prevData, morphlineResult)
+    //SMF project. Avoid events with numEvents != 1
+    val mergedRow = Row.merge(prevData, morphlineResult)
+        val numEventsIndex = 6
+        Try(
+          if (mergedRow.get(numEventsIndex).equals("1")){
+            mergedRow
+          } else{
+            Row.empty
+          }
+        ) match {
+          case Success(row) => row
+          case Failure(_) => mergedRow
+        }
+      }
 }
 
 object MorphlinesParser {

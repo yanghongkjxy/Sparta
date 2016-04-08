@@ -28,7 +28,7 @@ import com.stratio.sparta.serving.core.models.{AggregationPoliciesModel, PolicyS
 import com.stratio.sparta.serving.core.policy.status.PolicyStatusActor.Update
 import com.stratio.sparta.serving.core.policy.status.PolicyStatusEnum
 import com.typesafe.config.{Config, ConfigRenderOptions}
-import org.apache.spark.launcher.SparkLauncher
+import org.apache.spark.launcher.SpartaLauncher
 
 import scala.collection.JavaConversions._
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -106,7 +106,7 @@ with SpartaSerializer {
   private def launch(main: String, hdfsDriverFile: String, master: String, args: Map[String, String],
                      driverParams: Seq[String],
                      pluginsFiles: Seq[String]): Unit = {
-    val sparkLauncher = new SparkLauncher()
+    val sparkLauncher = new SpartaLauncher()
       .setSparkHome(sparkHome)
       .setAppResource(hdfsDriverFile)
       .setMainClass(main)
@@ -125,7 +125,7 @@ with SpartaSerializer {
 
     val sparkProcessStatus: Future[(Boolean, Process)] =
       for {
-        sparkProcess <- Future(sparkLauncher.launch)
+        sparkProcess <- Future(sparkLauncher.asInstanceOf[SpartaLauncher].launch)
       } yield (Await.result(Future(sparkProcess.waitFor() == 0), 20 seconds), sparkProcess)
 
     sparkProcessStatus.onComplete {
