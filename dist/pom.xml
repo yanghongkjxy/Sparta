@@ -59,50 +59,6 @@
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-antrun-plugin</artifactId>
-
-                        <version>1.7</version>
-                        <executions>
-                            <execution>
-                                <id>copy PLUGINS DRIVER</id>
-                                <phase>compile</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <target name="copy folders">
-                                        <copy todir="target/appassembler/repo/driver">
-                                            <fileset dir="../driver/target">
-                                                <include name="*.jar"/>
-                                                <exclude name="**/*-javadoc*"/>
-                                                <exclude name="**/*original*"/>
-                                            </fileset>
-                                        </copy>
-                                        <copy todir="target/appassembler/repo/serving-api">
-                                            <fileset dir="../serving-api" includes="**/*.jar" excludes="**/*-javadoc*"/>
-                                            <mapper type="flatten" />
-                                        </copy>
-                                        <copy todir="target/appassembler/repo/web">
-                                            <fileset dir="../web" includes="**/*.jar" excludes="**/*-javadoc*"/>
-                                            <mapper type="flatten" />
-                                        </copy>
-                                        <copy todir="target/appassembler/repo/benchmark">
-                                            <fileset dir="../benchmark" includes="**/*.*" excludes="**/*-javadoc*"/>
-                                        </copy>
-                                        <copy todir="target/appassembler/repo/examples">
-                                            <fileset dir="../examples">
-                                                <include name="**/*.*"/>
-                                                <exclude name="**/*-javadoc*"/>
-                                                <exclude name="**/*.iml"/>
-                                            </fileset>
-                                        </copy>
-                                    </target>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>appassembler-maven-plugin</artifactId>
                         <version>1.10</version>
@@ -111,7 +67,7 @@
                                 <id>engine</id>
                                 <configuration>
                                     <configurationSourceDirectory>${config.directory}</configurationSourceDirectory>
-                                    <configurationDirectory>:/etc/sds/sparta</configurationDirectory>
+                                    <configurationDirectory>config</configurationDirectory>
                                     <copyConfigurationDirectory>true</copyConfigurationDirectory>
                                     <includeConfigurationDirectoryInClasspath>true
                                     </includeConfigurationDirectoryInClasspath>
@@ -136,198 +92,19 @@
                         </executions>
                     </plugin>
                     <plugin>
-                        <groupId>com.stratio.mojo.unix</groupId>
-                        <artifactId>unix-maven-plugin</artifactId>
-                        <version>1.2.0</version>
-                        <extensions>true</extensions>
-                        <inherited>false</inherited>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>2.6</version>
                         <configuration>
-                            <outputFileName>stratio-sparta</outputFileName>
-                            <contact><![CDATA[Stratio SpaRTA<sparta@stratio.com>]]></contact>
-                            <contactEmail>sparta@stratio.com</contactEmail>
-                            <deb>
-                                <section>devel</section>
-                                <preDepends>jq</preDepends>
-                                <preDepends>lockfile-progs</preDepends>
-                            </deb>
-                            <rpm>
-                                <group>stratio</group>
-                                <requires>bash</requires>
-                                <requires>jq</requires>
-                            </rpm>
-                            <name>Engine</name>
-                            <excludeDirectoryAttributes>
-                                <dir>/etc</dir>
-                                <dir>/etc/init.d</dir>
-                                <dir>/etc/default</dir>
-                                <dir>/var</dir>
-                                <dir>/var/run</dir>
-                                <dir>/var/log</dir>
-                                <dir>/opt</dir>
-                                <dir>/usr</dir>
-                                <dir>/bin</dir>
-                            </excludeDirectoryAttributes>
-                            <defaults>
-                                <directoryAttributes>
-                                    <user>sparta</user>
-                                    <group>stratio</group>
-                                    <mode>0750</mode>
-                                </directoryAttributes>
-                                <fileAttributes>
-                                    <user>sparta</user>
-                                    <group>stratio</group>
-                                    <mode>0644</mode>
-                                </fileAttributes>
-                            </defaults>
-                            <assembly>
-                                <mkdirs>
-                                    <path>/var/run/sds</path>
-                                    <attributes>
-                                        <user>root</user>
-                                        <group>stratio</group>
-                                        <mode>0775</mode>
-                                    </attributes>
-                                </mkdirs>
-                                <mkdirs>
-                                    <path>/var/log/sds</path>
-                                    <attributes>
-                                        <user>root</user>
-                                        <group>stratio</group>
-                                        <mode>0775</mode>
-                                    </attributes>
-                                </mkdirs>
-                                <mkdirs>
-                                    <path>/opt/sds</path>
-                                    <attributes>
-                                        <user>root</user>
-                                        <group>stratio</group>
-                                        <mode>0775</mode>
-                                    </attributes>
-                                </mkdirs>
-                                <mkdirs>
-                                    <path>/etc/sds</path>
-                                    <attributes>
-                                        <user>root</user>
-                                        <group>stratio</group>
-                                        <mode>0775</mode>
-                                    </attributes>
-                                </mkdirs>
-                                <mkdirs>
-                                    <path>/var/sds/sparta</path>
-                                </mkdirs>
-                                <mkdirs>
-                                    <path>/var/log/sds/sparta</path>
-                                </mkdirs>
-                                <copyDirectory>
-                                    <from>target/appassembler/bin</from>
-                                    <to>/opt/sds/sparta/bin</to>
-                                </copyDirectory>
-                                <copyDirectory>
-                                    <from>target/appassembler/repo</from>
-                                    <to>/opt/sds/sparta/repo</to>
-                                </copyDirectory>
-                                <copyDirectory>
-                                    <from>target/appassembler/:/etc/sds/sparta</from>
-                                    <to>/etc/sds/sparta</to>
-                                </copyDirectory>
-                                <copyDirectory>
-                                    <from>target/appassembler/repo/driver</from>
-                                    <to>/opt/sds/sparta/driver</to>
-                                </copyDirectory>
-                                <copyDirectory>
-                                    <from>target/appassembler/repo/serving-api</from>
-                                    <to>/opt/sds/sparta/serving-api</to>
-                                </copyDirectory>
-                                <copyDirectory>
-                                    <from>target/appassembler/repo/benchmark</from>
-                                    <to>/opt/sds/sparta/benchmark</to>
-                                </copyDirectory>
-                                <copyDirectory>
-                                    <from>target/appassembler/repo/examples</from>
-                                    <to>/opt/sds/sparta/examples</to>
-                                </copyDirectory>
-                                <copyDirectory>
-                                    <from>src/main/unix/files_and_dirs/bin</from>
-                                    <to>/opt/sds/sparta/bin</to>
-                                </copyDirectory>
-                            </assembly>
+                            <descriptor>src/main/assembly/src.xml</descriptor>
                         </configuration>
                         <executions>
                             <execution>
-                                <id>deb</id>
+                                <id>make-assembly</id>
                                 <phase>package</phase>
                                 <goals>
-                                    <goal>package-deb</goal>
+                                    <goal>single</goal>
                                 </goals>
-                                <configuration>
-                                    <architecture>all</architecture>
-                                    <assembly>
-                                        <copyFile>
-                                            <path>src/main/unix/files_and_dirs/etc/default/sparta-functions</path>
-                                            <toFile>/etc/default/sparta-functions</toFile>
-                                            <attributes>
-                                                <user>root</user>
-                                                <group>root</group>
-                                                <mode>644</mode>
-                                            </attributes>
-                                        </copyFile>
-                                        <copyFile>
-                                            <path>src/main/unix/files_and_dirs/etc/default/sparta-variables</path>
-                                            <toFile>/etc/default/sparta-variables</toFile>
-                                            <attributes>
-                                                <user>root</user>
-                                                <group>root</group>
-                                                <mode>644</mode>
-                                            </attributes>
-                                        </copyFile>
-                                        <copyFile>
-                                            <path>src/main/unix/files_and_dirs/etc/init.d/sparta-deb.sh</path>
-                                            <toFile>/etc/init.d/sparta</toFile>
-                                            <attributes>
-                                                <user>root</user>
-                                                <group>root</group>
-                                            </attributes>
-                                        </copyFile>
-                                    </assembly>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>rpm</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>package-rpm</goal>
-                                </goals>
-                                <configuration>
-                                    <architecture>noarch</architecture>
-                                    <assembly>
-                                        <copyFile>
-                                            <path>src/main/unix/files_and_dirs/etc/default/sparta-functions</path>
-                                            <toFile>/etc/default/sparta-functions</toFile>
-                                            <attributes>
-                                                <user>root</user>
-                                                <group>root</group>
-                                                <mode>644</mode>
-                                            </attributes>
-                                        </copyFile>
-                                        <copyFile>
-                                            <path>src/main/unix/files_and_dirs/etc/default/sparta-variables</path>
-                                            <toFile>/etc/default/sparta-variables</toFile>
-                                            <attributes>
-                                                <user>root</user>
-                                                <group>root</group>
-                                                <mode>644</mode>
-                                            </attributes>
-                                        </copyFile>
-                                        <copyFile>
-                                            <path>src/main/unix/files_and_dirs/etc/init.d/sparta-rpm.sh</path>
-                                            <toFile>/etc/init.d/sparta</toFile>
-                                            <attributes>
-                                                <user>root</user>
-                                                <group>root</group>
-                                            </attributes>
-                                        </copyFile>
-                                    </assembly>
-                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
