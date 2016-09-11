@@ -74,6 +74,8 @@
                                     <assembleDirectory>target/appassembler</assembleDirectory>
                                     <extraJvmArguments>$SPARTA_OPTS</extraJvmArguments>
                                     <filterConfigurationDirectory>true</filterConfigurationDirectory>
+                                    <useWildcardClassPath>true</useWildcardClassPath>
+                                    <repositoryLayout>flat</repositoryLayout>
                                     <programs>
                                         <program>
                                             <mainClass>${driver.mainclass}</mainClass>
