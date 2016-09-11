@@ -1,4 +1,11 @@
-[![Coverage Status](https://coveralls.io/repos/github/Stratio/Sparta/badge.svg?branch=master)](https://coveralls.io/github/Stratio/Sparta?branch=master)
+> 这是挖财内容定制版
+
+# 打包
+
+
+执行 `mvn clean package -Dmaven.test.skip=true -Ppackage`, `dist/target` 下生成 ` stratio-sparta-0.11.0-bin.zip`。
+
+
 
 # About Stratio Sparta
 
