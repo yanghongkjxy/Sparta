@@ -57,10 +57,11 @@ object HdfsUtils extends SLF4JLogging {
 
   def hdfsConfiguration(configOpt: Option[Config]): Configuration =
     configOpt.map { config =>
+      val username = config.getString("hadoopUserName")
       val master = config.getString("hdfsMaster")
       val port = Try(config.getInt("hdfsPort")).getOrElse(HdfsDefaultPort)
       val conf = new Configuration()
-      conf.set(DefaultFSProperty, s"hdfs://$master:$port/user/stratio/sparta")
+      conf.set(DefaultFSProperty, s"hdfs://$master:$port/user/$username/sparta")
       conf
     }.getOrElse(
       throw new Exception("Not found hdfs config")
